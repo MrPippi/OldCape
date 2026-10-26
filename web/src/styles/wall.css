@@ -1,0 +1,166 @@
+/* ---------- finder (sticky search bar) ---------- */
+.finder {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--panel-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.finder-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 12px var(--gutter);
+}
+.id-form {
+  display: flex;
+  gap: 8px;
+  flex: 1 1 100%;
+}
+.inp {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  background: var(--well);
+  border: 1px solid #33363b;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--ink);
+  font: 16px var(--font-pixel); /* 16px avoids iOS zoom on focus */
+}
+.inp::placeholder {
+  color: var(--mute);
+}
+.go {
+  min-width: 56px;
+}
+.sw {
+  display: flex;
+  gap: 6px;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 3px;
+}
+.sw::-webkit-scrollbar {
+  display: none;
+}
+.sw button {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--swatch);
+  border: 2px solid var(--bg);
+  outline: 1px solid #3a3d42;
+  cursor: pointer;
+  padding: 0;
+}
+.sw button[aria-pressed="true"] {
+  outline: 2px solid var(--gold);
+  box-shadow: 0 0 0 4px #f0c67433;
+}
+.finder-in > .b2 {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.cnt {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--mute);
+}
+.msg {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold);
+  font-size: 14px;
+}
+.msg:not(:empty) {
+  padding-bottom: 12px;
+}
+
+@media (min-width: 1024px) {
+  .id-form {
+    flex: 0 0 220px;
+  }
+  .sw {
+    flex: 0 1 auto;
+  }
+}
+
+/* ---------- wall ---------- */
+.wall-wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 14px var(--gutter) 24px;
+  min-height: 60vh;
+}
+.wall {
+  display: grid;
+  /* card width = cape width + padding; the cape itself is never stretched */
+  grid-template-columns: repeat(auto-fill, minmax(calc(10px * var(--scale) + 26px), 1fr));
+  gap: 8px;
+  --scale: 4;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0 7px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.card:hover {
+  border-color: #3a3d42;
+}
+.card .cape {
+  background-color: var(--well);
+}
+.num {
+  font-size: 11px;
+  color: var(--mute);
+}
+.sentinel {
+  height: 1px;
+}
+.empty {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--soft);
+}
+
+@media (min-width: 640px) {
+  .wall {
+    --scale: 5;
+    gap: 10px;
+  }
+}
+@media (min-width: 1024px) {
+  .wall {
+    --scale: 6;
+    gap: 12px;
+  }
+  .num {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* roomier cards on desktop: ~9 per row inside --maxw */
+  .wall {
+    grid-template-columns: repeat(auto-fill, minmax(calc(10px * var(--scale) + 44px), 1fr));
+  }
+}

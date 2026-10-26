@@ -1,11 +1,15 @@
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
+import "./styles/wall.css";
 
 import { loadIndex } from "./data/index-loader";
+import { filterByColors } from "./data/query";
 import type { CapeEntry, CapeIndex } from "./data/types";
+import { mountFinder } from "./ui/finder";
 import { mountHero } from "./ui/hero";
 import { showLoadError, showLoading } from "./ui/status";
+import { mountWall } from "./ui/wall";
 
 /** GitHub Releases asset with every 64x32 texture; set when the release exists. */
 export const RELEASE_ZIP_URL = "";
@@ -22,6 +26,18 @@ function mountPage(index: CapeIndex): void {
     void entry;
   };
   mountHero(byId("hero"), index, open);
+  const wall = mountWall(byId("wall"), index, open);
+  const showMatches = (mask: number): void => {
+    const matches = filterByColors(index, mask);
+    wall.setResults(matches);
+    finder.setCount(matches.length);
+  };
+  const finder = mountFinder(byId("finder"), index, {
+    onFilter: showMatches,
+    onOpen: open,
+    onNotFound: () => undefined,
+  });
+  showMatches(0);
 }
 
 function wireReleaseLink(): void {
