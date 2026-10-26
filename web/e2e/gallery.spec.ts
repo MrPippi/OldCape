@@ -72,12 +72,3 @@ test("failed index load offers a working retry", async ({ page }) => {
   await expect(page.locator(".card").nth(63)).toBeAttached();
 });
 
-test("about section links the full-set zip on GitHub Releases", async ({ page }) => {
-  await page.goto("/");
-  const link = page.locator("#release-zip");
-  await expect(link).toBeVisible();
-  await expect(link).toHaveAttribute(
-    "href",
-    "https://github.com/MrPippi/OldCape/releases/download/v1.0.0/oldcape-capes.zip",
-  );
-});

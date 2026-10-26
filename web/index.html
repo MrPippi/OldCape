@@ -46,23 +46,25 @@
       </section>
       <section class="finder" id="finder" aria-label="找披風"></section>
       <section class="wall-wrap" id="wall" aria-label="披風牆"></section>
-
-      <section class="info" id="how">
-        <h2>怎麼穿上？</h2>
-        <ol>
-          <li>在披風頁按「下載遊戲貼圖」，取得 64×32 的 PNG。</li>
-          <li>選一個可以使用自訂披風圖檔的模組或服務（例如 MinecraftCapes 這類可上傳自訂披風的服務），照它的說明上傳或套用這張 PNG。</li>
-          <li>進入遊戲，按 F5 切換視角看看背後。</li>
-        </ol>
-        <p class="note">註：正版官方披風無法自訂；OptiFine 的披風只能在它的官網設計，不能直接使用這張圖。自訂披風通常只有使用同一個模組或服務的玩家看得到。</p>
-      </section>
-
-      <section class="info" id="about">
-        <h2>關於老披風</h2>
-        <p>「台灣麥塊」曾是台灣最大型的 Minecraft 伺服器，玩家可以上傳自己畫的披風。伺服器熄燈後，留下了這三萬件作品。這裡把它們一件件還原成遊戲貼圖，讓老玩家找回自己的那件，也讓大家再看一次當年的創作。</p>
-        <p><a class="b2" id="release-zip" href="#">⬇ 下載全套披風 .zip</a></p>
-      </section>
     </main>
+
+    <dialog class="info" id="how" aria-labelledby="how-title">
+      <button type="button" class="x" aria-label="關閉">✕</button>
+      <h2 id="how-title">怎麼穿上？</h2>
+      <ol>
+        <li>在披風頁按「下載遊戲貼圖」，取得 64×32 的 PNG。</li>
+        <li>選一個可以使用自訂披風圖檔的模組或服務（例如 MinecraftCapes 這類可上傳自訂披風的服務），照它的說明上傳或套用這張 PNG。</li>
+        <li>進入遊戲，按 F5 切換視角看看背後。</li>
+      </ol>
+      <p class="note">註：正版官方披風無法自訂；OptiFine 的披風只能在它的官網設計，不能直接使用這張圖。自訂披風通常只有使用同一個模組或服務的玩家看得到。</p>
+    </dialog>
+
+    <dialog class="info" id="about" aria-labelledby="about-title">
+      <button type="button" class="x" aria-label="關閉">✕</button>
+      <h2 id="about-title">關於老披風</h2>
+      <p>「台灣麥塊」曾是台灣最大型的 Minecraft 伺服器，玩家可以上傳自己畫的披風。伺服器熄燈後，留下了這三萬件作品。這裡把它們一件件還原成遊戲貼圖，讓老玩家找回自己的那件，也讓大家再看一次當年的創作。</p>
+      <p><a class="b2" id="release-zip" href="#">⬇ 下載全套披風 .zip</a></p>
+    </dialog>
 
     <div id="detail-root"></div>
     <script type="module" src="/src/main.ts"></script>

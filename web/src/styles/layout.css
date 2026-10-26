@@ -182,15 +182,53 @@
   }
 }
 
-/* ---------- info sections ---------- */
+/* ---------- info dialogs (怎麼穿上 / 關於) ---------- */
+body:has(dialog.info[open]) {
+  overflow: hidden;
+}
 .info {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 40px var(--gutter);
-  border-top: 1px solid var(--line);
+  position: fixed;
+  width: min(560px, calc(100% - 2 * var(--gutter)));
+  max-height: 85dvh;
+  margin: auto;
+  padding: 28px 28px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #1a1d22;
+  border: 1px solid #33363b;
+  border-radius: var(--radius);
   color: var(--soft);
   font-size: 14px;
   line-height: 1.9;
+}
+.info:focus {
+  outline: none; /* the box itself gets focus on open; its buttons keep their rings */
+}
+.info::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+.info .x {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: 0;
+  color: var(--mute);
+  font-size: 18px;
+  cursor: pointer;
+}
+/* phones: bottom sheet, like the cape detail */
+@media (max-width: 639px) {
+  .info {
+    width: 100%;
+    max-width: none;
+    margin: auto 0 0;
+    padding: 24px var(--gutter) calc(20px + env(safe-area-inset-bottom));
+    border-radius: 14px 14px 0 0;
+    border-bottom: 0;
+  }
 }
 .info h2 {
   font-family: var(--font-serif);

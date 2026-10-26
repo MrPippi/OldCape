@@ -10,6 +10,7 @@ import type { CapeEntry, CapeIndex } from "./data/types";
 import { mountDetail } from "./ui/detail";
 import { mountFinder } from "./ui/finder";
 import { mountHero } from "./ui/hero";
+import { mountInfoDialogs } from "./ui/info";
 import { showLoadError, showLoading } from "./ui/status";
 import { mountWall } from "./ui/wall";
 
@@ -70,4 +71,5 @@ async function boot(): Promise<void> {
 }
 
 wireReleaseLink();
+mountInfoDialogs(document);
 void boot();
