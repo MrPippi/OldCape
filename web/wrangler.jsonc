@@ -4,5 +4,9 @@
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  "routes": [
+    { "pattern": "oldcape.org", "custom_domain": true },
+    { "pattern": "www.oldcape.org", "custom_domain": true }
+  ]
 }
