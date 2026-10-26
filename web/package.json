@@ -12,6 +12,7 @@
     "e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@vitest/coverage-v8": "^3.2.7",
     "jsdom": "^25.0.1",
     "typescript": "^5.9.3",

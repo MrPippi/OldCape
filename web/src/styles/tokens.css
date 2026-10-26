@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "OldCape Pixel";
+  src: url("/fonts/cubic11-subset.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  --bg: #0d0f12;
+  --panel: #15181c;
+  --panel-2: #111317;
+  --line: #24282e;
+  --ink: #ece7db;
+  --ink-strong: #ffffff;
+  --mute: #8d887c;
+  --soft: #a9a397;
+  --gold: #f0c674;
+  --well: #0b0c0e;
+
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-serif: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+  --font-pixel: "OldCape Pixel", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", monospace;
+
+  --gutter: 16px;
+  --radius: 7px;
+  --maxw: 1200px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 36px;
+  }
+}
