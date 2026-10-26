@@ -1,0 +1,13 @@
+[project]
+name = "oldcape"
+version = "1.0.0"
+description = "Recover, tag and pack Taiwan Minecraft server capes for the OldCape site"
+requires-python = ">=3.12"
+dependencies = ["pillow>=10", "fonttools[woff]>=4.50", "brotli"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
