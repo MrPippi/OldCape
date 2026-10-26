@@ -3,12 +3,12 @@ import type { CapeEntry, CapeIndex } from "./types";
 const FULLWIDTH_ZERO = 0xff10;
 const TAIPEI_OFFSET_MS = 8 * 60 * 60 * 1000;
 
-/** Accepts "123", "#123", "＃１２３" with surrounding spaces; anything else is null. */
+/** Accepts "123", "#123", "# 123", "＃１２３" with surrounding spaces; anything else is null. */
 export function parseIdInput(raw: string): number | null {
   const ascii = raw
     .trim()
     .replace(/[０-９]/g, (d) => String(d.charCodeAt(0) - FULLWIDTH_ZERO))
-    .replace(/^[#＃]/, "");
+    .replace(/^[#＃]\s*/, "");
   return /^\d+$/.test(ascii) ? Number(ascii) : null;
 }
 

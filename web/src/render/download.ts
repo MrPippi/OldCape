@@ -3,6 +3,9 @@ import { atlasUrl, cellOrigin } from "./sprite";
 
 export const TEXTURE_SIZE = [64, 32] as const;
 
+/** iOS Safari fetches the blob only after the user confirms its download prompt. */
+export const BLOB_URL_LIFETIME_MS = 40_000;
+
 export type ImageLoader = (url: string) => Promise<CanvasImageSource>;
 
 export function textureFileName(id: number): string {
@@ -48,6 +51,9 @@ export async function downloadCape(
   const link = document.createElement("a");
   link.href = url;
   link.download = textureFileName(entry.id);
+  link.hidden = true;
+  document.body.append(link); // some WebViews ignore clicks on detached anchors
   link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), BLOB_URL_LIFETIME_MS);
 }

@@ -18,6 +18,8 @@ describe("parseIdInput", () => {
     ["＃１２３", 123],
     [" 123 ", 123],
     ["123", 123],
+    ["# 123", 123],
+    ["＃ １２３", 123],
   ])("parses %j", (raw, id) => {
     expect(parseIdInput(raw)).toBe(id);
   });

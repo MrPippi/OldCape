@@ -40,7 +40,7 @@
 }
 .sw {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex: 1 1 auto;
   overflow-x: auto;
   scrollbar-width: none;
@@ -50,9 +50,11 @@
   display: none;
 }
 .sw button {
-  flex: none;
-  width: 28px;
-  height: 28px;
+  /* shrink to fit so all 12 colours stay visible on narrow phones */
+  flex: 1 1 0;
+  min-width: 18px;
+  max-width: 28px;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: var(--swatch);
   border: 2px solid var(--bg);

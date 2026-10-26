@@ -26,14 +26,22 @@ function mountPage(index: CapeIndex): void {
   const detail = mountDetail(byId("detail-root"), index);
   const open = (entry: CapeEntry): void => detail.open(entry);
   mountHero(byId("hero"), index, open);
-  const wall = mountWall(byId("wall"), index, open);
+  const wallRoot = byId("wall");
+  const finderRoot = byId("finder");
+  const wall = mountWall(wallRoot, index, open);
   const showMatches = (mask: number): void => {
     const matches = filterByColors(index, mask);
     wall.setResults(matches);
     finder.setCount(matches.length);
   };
-  const finder = mountFinder(byId("finder"), index, {
-    onFilter: showMatches,
+  /** After a filter change deep in the wall, jump back to the first result under the sticky finder. */
+  const filterAndShowTop = (mask: number): void => {
+    showMatches(mask);
+    const offset = wallRoot.getBoundingClientRect().top - finderRoot.offsetHeight;
+    if (offset < 0) window.scrollTo({ top: window.scrollY + offset, behavior: "instant" });
+  };
+  const finder = mountFinder(finderRoot, index, {
+    onFilter: filterAndShowTop,
     onOpen: open,
     onNotFound: () => undefined,
   });

@@ -94,14 +94,15 @@ body.detail-open {
 }
 
 /* desktop: centred panel */
+/* positioned by detail.ts on whole pixels: a translate(-50%) centre can land the
+   12x faces on half pixels and soften them in Safari */
 .detail.panel {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
   display: grid;
   grid-template-columns: auto minmax(260px, 340px);
   gap: 36px;
-  align-items: center;
+  align-items: start;
   padding: 36px;
   border-radius: 12px;
   max-width: calc(100vw - 48px);

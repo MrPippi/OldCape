@@ -21,6 +21,19 @@ export interface DetailApi {
 
 const COPIED_RESET_MS = 2000;
 
+function centreOnWholePixels(panel: HTMLElement): void {
+  const { width, height } = panel.getBoundingClientRect();
+  panel.style.left = `${Math.max(0, Math.round((window.innerWidth - width) / 2))}px`;
+  panel.style.top = `${Math.max(0, Math.round((window.innerHeight - height) / 2))}px`;
+}
+
+/** Page regions hidden from focus and assistive tech while the dialog is open. */
+function setBackgroundInert(inert: boolean): void {
+  for (const el of [document.querySelector<HTMLElement>("header.nav"), document.getElementById("app")]) {
+    if (el) el.inert = inert;
+  }
+}
+
 export function mountDetail(
   root: HTMLElement,
   index: CapeIndex,
@@ -86,6 +99,8 @@ export function mountDetail(
 
     root.replaceChildren(backdrop, panel);
     document.body.classList.add("detail-open");
+    setBackgroundInert(true);
+    if (isDesktop(width)) centreOnWholePixels(panel);
     closeBtn.focus();
   };
 
@@ -93,6 +108,7 @@ export function mountDetail(
     current = null;
     root.replaceChildren();
     document.body.classList.remove("detail-open");
+    setBackgroundInert(false);
     returnFocus?.focus();
     returnFocus = null;
   };
@@ -103,10 +119,16 @@ export function mountDetail(
     render(entry);
   };
 
+  /**
+   * If we pushed this cape's history entry, step back over it so the Back button
+   * never reopens a closed cape; a deep-linked landing just drops the param.
+   */
   function close(): void {
     if (!current) return;
+    const pushedByUs = (history.state as { cape?: number } | null)?.cape === current.id;
     hide();
-    pushCape(null);
+    if (pushedByUs) history.back();
+    else if (readCapeParam(location.search) !== null) history.replaceState(null, "", location.pathname);
   }
 
   document.addEventListener("keydown", (event) => {

@@ -6,7 +6,9 @@ const idx = fixtureIndex();
 function setup(width = 1280) {
   Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
   const root = document.createElement("div");
-  document.body.replaceChildren(root);
+  const main = document.createElement("main");
+  main.id = "app";
+  document.body.replaceChildren(main, root);
   const download = vi.fn(async () => undefined);
   const writeText = vi.fn(async () => undefined);
   const api = mountDetail(root, idx, { download, clipboard: { writeText } });
@@ -64,12 +66,12 @@ describe("mountDetail", () => {
     await vi.waitFor(() => expect(root.textContent).toContain("已複製"));
   });
 
-  it("closes on Escape, backdrop and close button, restoring the URL", () => {
+  it("closes on Escape, backdrop and close button, restoring the URL", async () => {
     const { root, api } = setup();
     api.open(idx.byId.get(12)!);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(root.querySelector(".detail")).toBeNull();
-    expect(location.pathname + location.search).toBe("/");
+    await vi.waitFor(() => expect(location.pathname + location.search).toBe("/"));
 
     api.open(idx.byId.get(3)!);
     root.querySelector<HTMLElement>(".backdrop")!.click();
@@ -78,6 +80,34 @@ describe("mountDetail", () => {
     api.open(idx.byId.get(3)!);
     root.querySelector<HTMLButtonElement>("[data-action=close]")!.click();
     expect(root.querySelector(".detail")).toBeNull();
+  });
+
+  it("closing goes back instead of pushing, so Back never reopens the cape", async () => {
+    const { api } = setup();
+    api.open(idx.byId.get(12)!);
+    const lengthAfterOpen = history.length;
+    api.close();
+    await vi.waitFor(() => expect(location.search).toBe(""));
+    expect(history.length).toBe(lengthAfterOpen);
+  });
+
+  it("closing a deep-linked cape replaces the URL without adding history", () => {
+    const { api } = setup();
+    history.replaceState(null, "", "/?cape=12");
+    api.syncFromLocation();
+    const length = history.length;
+    api.close();
+    expect(location.pathname + location.search).toBe("/");
+    expect(history.length).toBe(length);
+  });
+
+  it("makes the page behind the dialog inert while open", () => {
+    const { api } = setup();
+    const main = document.getElementById("app")!;
+    api.open(idx.byId.get(12)!);
+    expect(main.inert).toBe(true);
+    api.close();
+    expect(main.inert).toBe(false);
   });
 
   it.each([

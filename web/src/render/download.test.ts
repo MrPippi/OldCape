@@ -63,3 +63,25 @@ describe("downloadCape", () => {
     expect(clicks[0].isConnected).toBe(false);
   });
 });
+
+describe("downloadCape blob lifetime", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("keeps the blob URL alive long enough for iOS Safari's download prompt", async () => {
+    stubCanvas();
+    let connectedAtClick = false;
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+      connectedAtClick = this.isConnected;
+    });
+    URL.createObjectURL = vi.fn(() => "blob:fake");
+    const revoke = vi.fn();
+    URL.revokeObjectURL = revoke;
+    vi.useFakeTimers();
+    await downloadCape(entry, idx, async () => ({}) as CanvasImageSource);
+    expect(connectedAtClick).toBe(true);
+    vi.advanceTimersByTime(39_000);
+    expect(revoke).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1_000);
+    expect(revoke).toHaveBeenCalledWith("blob:fake");
+  });
+});
