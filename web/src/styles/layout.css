@@ -240,6 +240,11 @@ body:has(dialog.info[open]) {
 .info ol {
   padding-left: 20px;
 }
+.info a:not(.b2) {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .note {
   color: var(--mute);
 }

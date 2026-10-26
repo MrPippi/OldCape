@@ -42,3 +42,10 @@ test("a /#how link opens the dialog on arrival", async ({ page }) => {
   await page.goto("/#how");
   await expect(page.getByRole("dialog", { name: "怎麼穿上？" })).toBeVisible();
 });
+
+test("怎麼穿上 points to a mod that accepts the downloaded PNG", async ({ page }) => {
+  await page.goto("/#how");
+  const how = page.getByRole("dialog", { name: "怎麼穿上？" });
+  await expect(how.getByRole("link", { name: "SkinMC 模組" })).toHaveAttribute("href", "https://modrinth.com/mod/skinmc");
+  await expect(how.getByRole("link", { name: "SkinMC 模組" })).toHaveCSS("color", "rgb(240, 198, 116)");
+});
