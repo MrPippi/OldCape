@@ -13,7 +13,7 @@ COLOR_BUCKETS = ("red", "orange", "yellow", "green", "cyan", "blue",
 FRONT_BOX = (1, 1, 11, 17)
 OPAQUE_ALPHA = 128
 BUCKET_SHARE = 0.15
-BLANK_MAX_COLOURS = 2
+BLANK_MAX_COLOURS = 1
 
 # (upper bound of hue in degrees, bucket) checked in order after the
 # achromatic and brown rules; red also covers h >= 345.

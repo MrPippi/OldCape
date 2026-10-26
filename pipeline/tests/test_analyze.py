@@ -66,16 +66,15 @@ def test_transparent_region():
     assert is_blank(img) is True
 
 
-def test_two_distinct_colours_is_blank():
+def test_single_colour_is_blank():
     img = Image.new("RGBA", REGION_SIZE, (200, 0, 0, 255))
-    img.putpixel((3, 3), (0, 0, 200, 255))
     assert is_blank(img) is True
 
 
-def test_three_distinct_colours_not_blank():
+def test_two_distinct_colours_not_blank():
+    # two-colour capes are real designs (crosses, letters, creeper faces)
     img = Image.new("RGBA", REGION_SIZE, (200, 0, 0, 255))
     img.putpixel((3, 3), (0, 0, 200, 255))
-    img.putpixel((4, 4), (0, 200, 0, 255))
     assert is_blank(img) is False
 
 
