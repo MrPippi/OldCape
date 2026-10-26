@@ -92,10 +92,10 @@ OldCape 是一個靜態網站，讓當年的老玩家：
 - 響應式調整的是每排件數，不是披風的縮放倍數。
 
 ### 4.5 字體
-- 大標題：Noto Serif TC（粗體）。
-- 內文、按鈕：Noto Sans TC。
+- 大標題：Noto Serif TC（粗體），自行裁切成只含標題用字的小檔（約 6 KB）。
+- 內文、按鈕：使用裝置內建的中文字（Android 內建就是 Noto Sans CJK，iOS 為蘋方，Windows 為微軟正黑體），不另外下載。*實作時的決定*：從 Google Fonts 載入 Noto Sans TC 會多下載約 1 MB 字型，手機 Lighthouse 只有 67 分，違反效能目標。
 - 點綴：俐方體11號（Cubic 11），只用在 Logo、`#編號`、統計數字。建置時裁成只包含用到的字。
-- 字型下載前先顯示系統字（`font-display: swap`，備用字為蘋方、微軟正黑體）。
+- 字型下載前先顯示系統字（`font-display: swap`）。
 - 三者都是 OFL 授權。
 
 ### 4.6 效能目標

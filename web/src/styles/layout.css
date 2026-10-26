@@ -29,7 +29,8 @@
 /* ---------- hero ---------- */
 .hero {
   display: grid;
-  grid-template-columns: 1fr auto;
+  /* fixed stage column: the pedestal's #id width must not reflow the title */
+  grid-template-columns: 1fr 128px;
   gap: 16px;
   align-items: center;
   max-width: var(--maxw);
@@ -208,4 +209,20 @@
 /* keep CJK phrases whole when the title wraps */
 .phrase {
   display: inline-block;
+}
+
+/* reserve the hero cape box (heroScale: 6x mobile, 14x desktop) before data arrives */
+.stage-cape .cape {
+  display: block;
+  width: 60px;
+  height: 96px;
+}
+.stage-cape:disabled {
+  cursor: default;
+}
+@media (min-width: 1024px) {
+  .stage-cape .cape {
+    width: 140px;
+    height: 224px;
+  }
 }

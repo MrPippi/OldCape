@@ -8,15 +8,8 @@
     <meta name="theme-color" content="#0d0f12" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="/data/index.json" as="fetch" crossorigin />
+    <link rel="preload" href="/fonts/noto-serif-tc-900-subset.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/cubic11-subset.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@900&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
   </head>
   <body>
     <header class="nav">
@@ -29,7 +22,28 @@
     </header>
 
     <main id="app">
-      <section class="hero" id="hero" aria-label="首頁主視覺"></section>
+      <section class="hero" id="hero" aria-label="首頁主視覺">
+        <div class="hero-text">
+          <div class="kick">台灣麥塊 · 玩家披風典藏</div>
+          <h1>那些年，<br /><span class="phrase">我們披在</span><span class="phrase">背上的回憶</span></h1>
+          <p class="lead">三萬件當年玩家親手畫的披風，全部還原成遊戲貼圖。找到你的那一件，下載，再穿上一次。</p>
+          <dl class="stats">
+            <div><dt>件披風</dt><dd class="pixel" data-stat="total">—</dd></div>
+            <div><dt>遊戲貼圖</dt><dd class="pixel">64×32</dd></div>
+            <div><dt>下載</dt><dd>免費</dd></div>
+          </dl>
+          <div class="btns">
+            <a class="b1" href="#finder">開始找我的披風</a>
+            <button type="button" class="b2" data-action="random" disabled>🎲 隨機看一件</button>
+          </div>
+        </div>
+        <div class="stage">
+          <button type="button" class="stage-cape" aria-label="今日展出披風" disabled>
+            <span class="cape" role="img" aria-label="今日展出披風"></span>
+          </button>
+          <div class="ped">今日展出 · <em class="pixel">#…</em></div>
+        </div>
+      </section>
       <section class="finder" id="finder" aria-label="找披風"></section>
       <section class="wall-wrap" id="wall" aria-label="披風牆"></section>
 

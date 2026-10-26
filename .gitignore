@@ -11,3 +11,6 @@ __pycache__/
 .venv/
 *.egg-info/
 lh.json
+
+# large upstream font sources (download per README)
+vendor/fonts/NotoSerifTC*.ttf

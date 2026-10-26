@@ -164,3 +164,26 @@
     grid-template-columns: repeat(auto-fill, minmax(calc(10px * var(--scale) + 44px), 1fr));
   }
 }
+
+/* Fixed finder layout per breakpoint so its height can be reserved before data loads (no CLS). */
+@media (max-width: 1023px) {
+  .finder-in {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+  .id-form,
+  .sw {
+    grid-column: 1 / -1;
+  }
+  .finder-in > .b2 {
+    justify-self: start;
+  }
+  .finder {
+    min-height: 162px;
+  }
+}
+@media (min-width: 1024px) {
+  .finder {
+    min-height: 72px;
+  }
+}

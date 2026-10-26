@@ -35,8 +35,8 @@ button {
 
 .px {
   display: block;
+  image-rendering: crisp-edges; /* fallback for old Firefox */
   image-rendering: pixelated;
-  image-rendering: crisp-edges;
   background-repeat: no-repeat;
   flex: none;
 }

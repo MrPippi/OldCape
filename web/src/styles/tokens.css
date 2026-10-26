@@ -1,3 +1,11 @@
+/* Self-hosted subsets (pipeline/oldcape/fonts.py): a few KB instead of ~1 MB of CJK chunks. */
+@font-face {
+  font-family: "OldCape Serif";
+  src: url("/fonts/noto-serif-tc-900-subset.woff2") format("woff2");
+  font-weight: 900;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "OldCape Pixel";
   src: url("/fonts/cubic11-subset.woff2") format("woff2");
@@ -16,8 +24,9 @@
   --gold: #f0c674;
   --well: #0b0c0e;
 
-  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-  --font-serif: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+  /* Body text uses the device's own CJK font (Android ships Noto Sans CJK; iOS PingFang). */
+  --font-sans: "Noto Sans TC", "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-serif: "OldCape Serif", "Noto Serif TC", "Noto Serif CJK TC", "PingFang TC", "Microsoft JhengHei", serif;
   --font-pixel: "OldCape Pixel", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", monospace;
 
   --gutter: 16px;
