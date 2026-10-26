@@ -1,11 +1,10 @@
 import { findById } from "../data/query";
 import type { CapeEntry, CapeIndex } from "../data/types";
 import { downloadCape } from "../render/download";
-import { applySprite } from "../render/sprite";
-import type { Face } from "../render/sprite";
 import { capeHref, pushCape, readCapeParam } from "../router";
 import { h } from "./dom";
 import { detailScale, isDesktop } from "./scale";
+import { mountSlab } from "./slab";
 
 export interface DetailDeps {
   download: (entry: CapeEntry, index: CapeIndex) => Promise<void>;
@@ -41,12 +40,6 @@ export function mountDetail(
 ): DetailApi {
   let current: CapeEntry | null = null;
   let returnFocus: HTMLElement | null = null;
-
-  const face = (entry: CapeEntry, which: Face, label: string, scale: number): HTMLElement => {
-    const cape = h("span", { class: "cape", role: "img", "aria-label": `${label} #${entry.id}` });
-    applySprite(cape, entry, index, which, scale);
-    return h("figure", { class: "face" }, cape, h("figcaption", {}, label));
-  };
 
   const render = (entry: CapeEntry): void => {
     const width = window.innerWidth;
@@ -89,7 +82,7 @@ export function mountDetail(
       "aria-labelledby": "detail-title",
     },
       closeBtn,
-      h("div", { class: "faces" }, face(entry, "front", "外側", scale), face(entry, "back", "內側", scale)),
+      mountSlab(entry, index, scale).el,
       h("div", { class: "detail-body" },
         h("h2", { id: "detail-title", class: "pixel" }, `#${entry.id}`),
         h("p", { class: "meta" }, "台灣麥塊玩家作品 · 遊戲貼圖 64×32 PNG"),

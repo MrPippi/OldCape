@@ -82,7 +82,6 @@
 
 /* ---------- wall: cards fade in page by page, and flip to show the back ---------- */
 .card {
-  perspective: 600px;
   animation: card-in 0.45s ease-out both;
   animation-delay: calc(var(--i, 0) * 25ms);
 }
@@ -101,12 +100,13 @@
 .card .flip > .back {
   transform: rotateY(180deg);
 }
+/* perspective lives in the flipped transform only: at rest the face is plain 2D, exact to the pixel */
 .card.is-flipped .flip {
-  transform: rotateY(180deg);
+  transform: perspective(600px) rotateY(180deg);
 }
 @media (hover: hover) {
   .card:hover .flip {
-    transform: rotateY(180deg);
+    transform: perspective(600px) rotateY(180deg);
   }
 }
 @keyframes card-in {

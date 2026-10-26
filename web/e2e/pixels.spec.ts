@@ -13,6 +13,14 @@ for (const vp of VIEWPORTS) {
     test("capes render at an exact integer scale and nothing scrolls sideways", async ({ page }) => {
       await page.goto("/");
       await expect(page.locator(".card").nth(63)).toBeAttached();
+      // measure at rest: mid-entrance the fractional `translate` adds float noise to rects
+      await page.evaluate(() =>
+        Promise.all(
+          document.getAnimations()
+            .filter((a) => (a.effect as KeyframeEffect | null)?.target?.closest(".card"))
+            .map((a) => a.finished),
+        ),
+      );
       // the face shown at rest; the back face is pre-rotated 180deg for the flip
       const sizes = await page.locator(".card .cape:not(.back)").evaluateAll((els) =>
         els.map((e) => {

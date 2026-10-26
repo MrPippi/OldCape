@@ -21,14 +21,13 @@ const button = (root: HTMLElement, text: string) =>
 afterEach(() => history.replaceState(null, "", "/"));
 
 describe("mountDetail", () => {
-  it("shows both faces at 12x on desktop and updates the URL", () => {
+  it("shows the cape as a 3D block at 12x on desktop and updates the URL", () => {
     const { root, api } = setup(1280);
     api.open(idx.byId.get(12)!);
     expect(root.querySelector("h2")?.textContent).toBe("#12");
-    const faces = root.querySelectorAll<HTMLElement>(".face .cape");
-    expect(faces).toHaveLength(2);
-    expect(faces[0].style.width).toBe("120px");
-    expect(faces[1].style.width).toBe("120px");
+    expect(root.querySelector(".slab-stage")?.getAttribute("aria-label")).toBe("披風 #12 3D 預覽");
+    expect(root.querySelector<HTMLElement>(".slab .front")?.style.width).toBe("120px");
+    expect(root.querySelector<HTMLElement>(".slab .back")?.style.width).toBe("120px");
     expect(root.querySelector(".detail")?.classList.contains("panel")).toBe(true);
     expect(location.search).toBe("?cape=12");
   });
@@ -37,7 +36,7 @@ describe("mountDetail", () => {
     const { root, api } = setup(375);
     api.open(idx.byId.get(12)!);
     expect(root.querySelector(".detail")?.classList.contains("sheet")).toBe(true);
-    expect(root.querySelector<HTMLElement>(".face .cape")?.style.width).toBe("60px");
+    expect(root.querySelector<HTMLElement>(".slab .front")?.style.width).toBe("60px");
   });
 
   it("downloads the texture", async () => {
