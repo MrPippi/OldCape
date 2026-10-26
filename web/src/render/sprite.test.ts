@@ -35,6 +35,16 @@ describe("spriteStyle", () => {
     expect(s.backgroundPosition).toBe("-1px -1px");
   });
 
+  it.each([
+    ["left", "0px -4px", "4px", "64px"],
+    ["right", "-44px -4px", "4px", "64px"],
+    ["top", "-4px 0px", "40px", "4px"],
+    ["bottom", "-44px 0px", "40px", "4px"],
+  ] as const)("crops the 1px %s edge of the cape for the 3D slab", (face, pos, w, h) => {
+    const s = spriteStyle(at(0), idx, face, 4);
+    expect([s.backgroundPosition, s.width, s.height]).toEqual([pos, w, h]);
+  });
+
   it.each([1.5, 0, -2, NaN])("rejects non-integer or non-positive scale %s", (scale) => {
     expect(() => spriteStyle(at(0), idx, "front", scale)).toThrow(RangeError);
   });

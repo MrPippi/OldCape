@@ -1,6 +1,6 @@
 import { fixtureIndex } from "../data/fixture";
 import type { CapeEntry } from "../data/types";
-import { PAGE_SIZE, mountWall } from "./wall";
+import { HOLD_TO_FLIP_MS, PAGE_SIZE, STAGGER_CAP, mountWall } from "./wall";
 
 type IOCallback = (entries: Array<{ isIntersecting: boolean }>) => void;
 let observers: Array<{ cb: IOCallback; targets: Element[]; disconnected: boolean }> = [];
@@ -75,5 +75,65 @@ describe("mountWall", () => {
     expect(button.textContent).toContain("隨機看一件");
     button.click();
     expect(onOpen.mock.calls[0][0].blank).toBe(false);
+  });
+
+  it("puts the back face behind the front so a card can flip", () => {
+    const root = document.createElement("section");
+    const wall = mountWall(root, fixtureIndex(), vi.fn());
+    wall.setResults(entries(1));
+    const faces = root.querySelectorAll<HTMLElement>(".card .flip .cape");
+    expect(faces).toHaveLength(2);
+    expect(faces[1].classList.contains("back")).toBe(true);
+    expect(faces[0].style.backgroundPosition).not.toBe(faces[1].style.backgroundPosition);
+  });
+
+  it("staggers each page's entrance from zero, capped so long pages do not drag", () => {
+    const root = document.createElement("section");
+    const wall = mountWall(root, fixtureIndex(), vi.fn());
+    wall.setResults(entries(70));
+    const order = () => [...root.querySelectorAll<HTMLElement>(".card")].map((c) => c.style.getPropertyValue("--i"));
+    expect(order().slice(0, 3)).toEqual(["0", "1", "2"]);
+    expect(order()[63]).toBe(String(STAGGER_CAP));
+    trigger();
+    expect(order()[64]).toBe("0");
+  });
+
+  describe("press and hold on touch", () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    const touch = (el: Element, type: string) =>
+      el.dispatchEvent(Object.assign(new Event(type, { bubbles: true }), { pointerType: "touch" }));
+
+    it("flips while held and does not open the cape on release", () => {
+      const root = document.createElement("section");
+      const onOpen = vi.fn();
+      const wall = mountWall(root, fixtureIndex(), onOpen);
+      wall.setResults(entries(1));
+      const card = root.querySelector<HTMLButtonElement>(".card")!;
+      touch(card, "pointerdown");
+      vi.advanceTimersByTime(HOLD_TO_FLIP_MS);
+      expect(card.classList.contains("is-flipped")).toBe(true);
+      touch(card, "pointerup");
+      card.click();
+      expect(card.classList.contains("is-flipped")).toBe(false);
+      expect(onOpen).not.toHaveBeenCalled();
+      card.click();
+      expect(onOpen).toHaveBeenCalledTimes(1);
+    });
+
+    it("a quick tap still opens the cape", () => {
+      const root = document.createElement("section");
+      const onOpen = vi.fn();
+      const wall = mountWall(root, fixtureIndex(), onOpen);
+      wall.setResults(entries(1));
+      const card = root.querySelector<HTMLButtonElement>(".card")!;
+      touch(card, "pointerdown");
+      vi.advanceTimersByTime(HOLD_TO_FLIP_MS - 50);
+      touch(card, "pointerup");
+      card.click();
+      expect(card.classList.contains("is-flipped")).toBe(false);
+      expect(onOpen).toHaveBeenCalledTimes(1);
+    });
   });
 });

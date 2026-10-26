@@ -13,7 +13,8 @@ for (const vp of VIEWPORTS) {
     test("capes render at an exact integer scale and nothing scrolls sideways", async ({ page }) => {
       await page.goto("/");
       await expect(page.locator(".card").nth(63)).toBeAttached();
-      const sizes = await page.locator(".card .cape").evaluateAll((els) =>
+      // the face shown at rest; the back face is pre-rotated 180deg for the flip
+      const sizes = await page.locator(".card .cape:not(.back)").evaluateAll((els) =>
         els.map((e) => {
           const r = e.getBoundingClientRect();
           return [r.width, r.height, getComputedStyle(e).imageRendering];

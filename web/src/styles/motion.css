@@ -1,0 +1,131 @@
+/*
+ * Motion. Everything here moves whole elements (rotate / translate / opacity);
+ * pixels are never sheared, and prefers-reduced-motion turns all of it off.
+ */
+
+/* ---------- hero: the featured cape hangs from a rod in a light breeze ---------- */
+.stage-cape {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 700px;
+}
+.stage-cape .rod {
+  position: relative;
+  z-index: 1;
+  width: 76px;
+  height: 4px;
+  margin-bottom: -2px;
+  border-radius: 2px;
+  background: linear-gradient(#6b5733, #3a2f1c);
+  box-shadow: 0 1px 2px #0006;
+}
+.stage-cape .cape {
+  position: relative;
+  transform-origin: 50% 0;
+  animation: breeze 9s ease-in-out infinite;
+}
+/* darker under the rod, plus a faint fold that drifts down the cloth */
+.stage-cape .cape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.32), transparent 14%),
+    linear-gradient(180deg, transparent 0 30%, rgba(255, 255, 255, 0.07) 42%, rgba(0, 0, 0, 0.12) 56%, transparent 70% 100%);
+  background-size: 100% 100%, 100% 220%;
+  background-position: 0 0, 0 100%;
+  animation: fold 4.5s linear infinite;
+}
+.stage-cape .floor {
+  width: 70px;
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #000a, transparent 70%);
+  animation: floor 9s ease-in-out infinite;
+}
+.stage::before {
+  animation: breathe 6s ease-in-out infinite;
+}
+@media (min-width: 1024px) {
+  .stage-cape .rod {
+    width: 176px;
+    height: 8px;
+    margin-bottom: -4px;
+    border-radius: 4px;
+  }
+  .stage-cape .floor {
+    width: 150px;
+    height: 16px;
+    margin-top: 12px;
+  }
+}
+@keyframes breeze {
+  0%, 100% { transform: rotateX(3deg) rotateY(0deg); }
+  22% { transform: rotateX(9deg) rotateY(1.5deg); }
+  40% { transform: rotateX(5deg) rotateY(0.5deg); }
+  63% { transform: rotateX(11deg) rotateY(-1.5deg); }
+  82% { transform: rotateX(4deg) rotateY(-0.5deg); }
+}
+@keyframes fold {
+  to { background-position: 0 0, 0 -120%; }
+}
+@keyframes floor {
+  0%, 100% { scale: 1 1; opacity: 1; }
+  22%, 63% { scale: 0.9 1; opacity: 0.75; }
+}
+@keyframes breathe {
+  50% { opacity: 0.55; scale: 0.94; }
+}
+
+/* ---------- wall: cards fade in page by page, and flip to show the back ---------- */
+.card {
+  perspective: 600px;
+  animation: card-in 0.45s ease-out both;
+  animation-delay: calc(var(--i, 0) * 25ms);
+}
+.card .flip {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+  /* `translate` rises in on its own property so it never fights the flip's `transform` */
+  animation: card-rise 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  animation-delay: calc(var(--i, 0) * 25ms);
+}
+.card .flip > .cape {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+}
+.card .flip > .back {
+  transform: rotateY(180deg);
+}
+.card.is-flipped .flip {
+  transform: rotateY(180deg);
+}
+@media (hover: hover) {
+  .card:hover .flip {
+    transform: rotateY(180deg);
+  }
+}
+@keyframes card-in {
+  from { opacity: 0; }
+}
+@keyframes card-rise {
+  from { translate: 0 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-cape .cape,
+  .stage-cape .cape::after,
+  .stage-cape .floor,
+  .stage::before,
+  .card,
+  .card .flip {
+    animation: none;
+  }
+  .card .flip {
+    transition: none;
+  }
+}

@@ -5,6 +5,10 @@ import { h } from "./dom";
 import { wallScale } from "./scale";
 
 export const PAGE_SIZE = 64;
+/** Entrance delay steps per page: later cards share the last step so a page never trickles in. */
+export const STAGGER_CAP = 24;
+/** Touch: holding a card this long flips it to the back instead of opening it. */
+export const HOLD_TO_FLIP_MS = 250;
 /** Start loading the next page this far before the sentinel scrolls into view. */
 const PRELOAD_MARGIN = "800px";
 
@@ -19,13 +23,22 @@ export function mountWall(root: HTMLElement, index: CapeIndex, onOpen: (e: CapeE
   let scale = wallScale(window.innerWidth);
   let observer: IntersectionObserver | null = null;
 
-  const card = (entry: CapeEntry): HTMLButtonElement => {
-    const cape = h("span", { class: "cape", "aria-hidden": "true" });
-    applySprite(cape, entry, index, "front", scale);
+  const paint = (button: HTMLElement, entry: CapeEntry): void => {
+    for (const face of button.querySelectorAll<HTMLElement>(".cape")) {
+      applySprite(face, entry, index, face.classList.contains("back") ? "back" : "front", scale);
+    }
+  };
+
+  const card = (entry: CapeEntry, order: number): HTMLButtonElement => {
     const button = h("button", { type: "button", class: "card", "data-id": entry.id, "aria-label": `披風 #${entry.id}` },
-      cape,
+      h("span", { class: "flip", "aria-hidden": "true" }, h("span", { class: "cape" }), h("span", { class: "cape back" })),
       h("small", { class: "num pixel" }, `#${entry.id}`));
-    button.addEventListener("click", () => onOpen(entry));
+    button.style.setProperty("--i", String(Math.min(order, STAGGER_CAP)));
+    paint(button, entry);
+    const swallowClick = holdToFlip(button);
+    button.addEventListener("click", () => {
+      if (!swallowClick()) onOpen(entry);
+    });
     return button;
   };
 
@@ -33,7 +46,7 @@ export function mountWall(root: HTMLElement, index: CapeIndex, onOpen: (e: CapeE
 
   const renderNextPage = (): void => {
     const page = results.slice(rendered, rendered + PAGE_SIZE);
-    grid.append(...page.map(card));
+    grid.append(...page.map((entry, i) => card(entry, i)));
     rendered += page.length;
     if (rendered >= results.length) {
       observer?.disconnect();
@@ -58,8 +71,7 @@ export function mountWall(root: HTMLElement, index: CapeIndex, onOpen: (e: CapeE
     scale = next;
     for (const el of grid.querySelectorAll<HTMLElement>(".card")) {
       const entry = index.byId.get(Number(el.dataset.id));
-      const cape = el.querySelector<HTMLElement>(".cape");
-      if (entry && cape) applySprite(cape, entry, index, "front", scale);
+      if (entry) paint(el, entry);
     }
   });
 
@@ -86,5 +98,35 @@ export function mountWall(root: HTMLElement, index: CapeIndex, onOpen: (e: CapeE
         observer.observe(sentinel);
       }
     },
+  };
+}
+
+/**
+ * Touch press-and-hold shows the card's back while held. Returns a check the click
+ * handler calls: true means the click ended a hold and must not open the cape.
+ */
+function holdToFlip(button: HTMLElement): () => boolean {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let held = false;
+  button.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") return;
+    held = false;
+    timer = setTimeout(() => {
+      held = true;
+      button.classList.add("is-flipped");
+    }, HOLD_TO_FLIP_MS);
+  });
+  const release = (): void => {
+    clearTimeout(timer);
+    button.classList.remove("is-flipped");
+  };
+  for (const type of ["pointerup", "pointercancel", "pointerleave"]) button.addEventListener(type, release);
+  button.addEventListener("contextmenu", (event) => {
+    if (held || timer !== undefined) event.preventDefault();
+  });
+  return () => {
+    const swallow = held;
+    held = false;
+    return swallow;
   };
 }

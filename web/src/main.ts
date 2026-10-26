@@ -3,6 +3,7 @@ import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/wall.css";
 import "./styles/detail.css";
+import "./styles/motion.css";
 
 import { loadIndex } from "./data/index-loader";
 import { filterByColors } from "./data/query";

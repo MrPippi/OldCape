@@ -1,13 +1,25 @@
 import type { CapeEntry, CapeIndex } from "../data/types";
 
-export type Face = "front" | "back";
+export type Face = "front" | "back" | "left" | "right" | "top" | "bottom";
 
-/** Top-left of each face inside the 22x17 cape cell (Minecraft cape UV layout). */
+/** Top-left of each face inside the 22x17 cape cell (Minecraft cape UV layout, a 10x16x1 box). */
 export const FACE_OFFSET: Readonly<Record<Face, readonly [number, number]>> = {
   front: [1, 1],
   back: [12, 1],
+  left: [0, 1],
+  right: [11, 1],
+  top: [1, 0],
+  bottom: [11, 0],
 };
-export const FACE_SIZE = [10, 16] as const;
+/** Width and height of each face in texture pixels. */
+export const FACE_SIZES: Readonly<Record<Face, readonly [number, number]>> = {
+  front: [10, 16],
+  back: [10, 16],
+  left: [1, 16],
+  right: [1, 16],
+  top: [10, 1],
+  bottom: [10, 1],
+};
 export const ATLAS_DIR = "/data/atlas";
 
 export interface SpriteStyle {
@@ -40,11 +52,12 @@ export function spriteStyle(entry: CapeEntry, index: CapeIndex, face: Face, scal
   }
   const { sheet, x, y } = cellOrigin(entry, index);
   const [fx, fy] = FACE_OFFSET[face];
+  const [fw, fh] = FACE_SIZES[face];
   const sheetW = index.cols * index.cell[0];
   const sheetH = (index.perSheet / index.cols) * index.cell[1];
   return {
-    width: `${FACE_SIZE[0] * scale}px`,
-    height: `${FACE_SIZE[1] * scale}px`,
+    width: `${fw * scale}px`,
+    height: `${fh * scale}px`,
     backgroundImage: `url("${atlasUrl(sheet)}")`,
     backgroundPosition: `${-(x + fx) * scale}px ${-(y + fy) * scale}px`,
     backgroundSize: `${sheetW * scale}px ${sheetH * scale}px`,
