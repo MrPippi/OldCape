@@ -1,3 +1,4 @@
+import { DATA_REV } from "../data/rev";
 import { fixtureIndex } from "../data/fixture";
 import type { CapeEntry } from "../data/types";
 import { downloadCape, renderTexture, textureFileName } from "./download";
@@ -31,7 +32,7 @@ describe("renderTexture", () => {
     const img = {} as CanvasImageSource;
     const loadImage = vi.fn(async () => img);
     const blob = await renderTexture(entry, idx, loadImage);
-    expect(loadImage).toHaveBeenCalledWith("/data/atlas/atlas-000.png");
+    expect(loadImage).toHaveBeenCalledWith(`/data/atlas/atlas-000.png?r=${DATA_REV}`);
     expect([canvas.width, canvas.height]).toEqual([64, 32]);
     expect(ctx.imageSmoothingEnabled).toBe(false);
     expect(ctx.drawImage).toHaveBeenCalledWith(img, 22, 17, 22, 17, 0, 0, 22, 17);

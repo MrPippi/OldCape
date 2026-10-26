@@ -1,6 +1,7 @@
 import type { CapeEntry, CapeIndex } from "./types";
+import { withRev } from "./rev";
 
-export const INDEX_URL = "/data/index.json";
+export const INDEX_URL = withRev("/data/index.json");
 const INDEX_VERSION = 1;
 
 const invalid = (): Error => new Error("index: invalid");

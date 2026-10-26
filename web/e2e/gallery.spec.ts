@@ -64,7 +64,7 @@ test("deep link opens the detail and back closes it", async ({ page }) => {
 
 test("failed index load offers a working retry", async ({ page }) => {
   let fail = true;
-  await page.route("**/data/index.json", (route) => (fail ? route.abort() : route.continue()));
+  await page.route(/\/data\/index\.json(\?|$)/, (route) => (fail ? route.abort() : route.continue()));
   await page.goto("/");
   await expect(page.getByRole("alert")).toContainText("載入失敗");
   fail = false;

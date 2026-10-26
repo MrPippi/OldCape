@@ -33,6 +33,7 @@ test("關於 opens from the nav with the full-set zip link", async ({ page }) =>
     "href",
     "https://github.com/MrPippi/OldCape/releases/download/v1.0.0/oldcape-capes.zip",
   );
+  await expect(about).toContainText("不使用 Cookie");
   await about.getByRole("button", { name: "關閉" }).click();
   await expect(about).toBeHidden();
   expect(new URL(page.url()).hash).toBe("");

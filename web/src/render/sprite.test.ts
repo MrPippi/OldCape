@@ -1,5 +1,6 @@
 import { fixtureIndex } from "../data/fixture";
 import type { CapeEntry } from "../data/types";
+import { DATA_REV } from "../data/rev";
 import { applySprite, atlasUrl, spriteStyle } from "./sprite";
 
 const idx = fixtureIndex();
@@ -7,8 +8,8 @@ const at = (pos: number): CapeEntry => ({ id: 1000 + pos, colors: 0, blank: fals
 
 describe("atlasUrl", () => {
   it("zero-pads the sheet number", () => {
-    expect(atlasUrl(7)).toBe("/data/atlas/atlas-007.png");
-    expect(atlasUrl(480)).toBe("/data/atlas/atlas-480.png");
+    expect(atlasUrl(7)).toBe(`/data/atlas/atlas-007.png?r=${DATA_REV}`);
+    expect(atlasUrl(480)).toBe(`/data/atlas/atlas-480.png?r=${DATA_REV}`);
   });
 });
 
@@ -17,7 +18,7 @@ describe("spriteStyle", () => {
     expect(spriteStyle(at(9), idx, "front", 6)).toEqual({
       width: "60px",
       height: "96px",
-      backgroundImage: 'url("/data/atlas/atlas-000.png")',
+      backgroundImage: `url("/data/atlas/atlas-000.png?r=${DATA_REV}")`,
       backgroundPosition: "-138px -108px",
       backgroundSize: "1056px 816px",
     });
@@ -31,7 +32,7 @@ describe("spriteStyle", () => {
 
   it("uses the next sheet after 64 capes", () => {
     const s = spriteStyle(at(64), idx, "front", 1);
-    expect(s.backgroundImage).toBe('url("/data/atlas/atlas-001.png")');
+    expect(s.backgroundImage).toBe(`url("/data/atlas/atlas-001.png?r=${DATA_REV}")`);
     expect(s.backgroundPosition).toBe("-1px -1px");
   });
 

@@ -1,3 +1,4 @@
+import { withRev } from "../data/rev";
 import type { CapeEntry, CapeIndex } from "../data/types";
 
 export type Face = "front" | "back" | "left" | "right" | "top" | "bottom";
@@ -31,7 +32,7 @@ export interface SpriteStyle {
 }
 
 export function atlasUrl(sheet: number): string {
-  return `${ATLAS_DIR}/atlas-${String(sheet).padStart(3, "0")}.png`;
+  return withRev(`${ATLAS_DIR}/atlas-${String(sheet).padStart(3, "0")}.png`);
 }
 
 /** Sheet number and pixel origin of an entry's 22x17 cell in its atlas. */

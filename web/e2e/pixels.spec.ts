@@ -37,7 +37,9 @@ for (const vp of VIEWPORTS) {
     });
 
     test("card boxes do not move when atlas images arrive late", async ({ page }) => {
-      await page.route("**/data/atlas/*.png", async (route) => {
+      let delayed = 0;
+      await page.route(/\/data\/atlas\/[^/]+\.png(\?|$)/, async (route) => {
+        delayed++;
         await new Promise((r) => setTimeout(r, 3000));
         await route.continue();
       });
@@ -50,10 +52,13 @@ for (const vp of VIEWPORTS) {
       const before = await rects();
       await page.waitForLoadState("networkidle");
       expect(await rects()).toEqual(before);
+      expect(delayed).toBeGreaterThan(0); // the slow route really ran
     });
 
     test("wall does not move when the index arrives late", async ({ page }) => {
-      await page.route("**/data/index.json", async (route) => {
+      let delayed = 0;
+      await page.route(/\/data\/index\.json(\?|$)/, async (route) => {
+        delayed++;
         await new Promise((r) => setTimeout(r, 1500));
         await route.continue();
       });
@@ -63,6 +68,7 @@ for (const vp of VIEWPORTS) {
       await expect(page.locator(".card").nth(63)).toBeAttached();
       await page.waitForLoadState("networkidle");
       expect(await wallTop()).toBe(before);
+      expect(delayed).toBeGreaterThan(0); // the slow route really ran
     });
 
     test("finder stays on screen while scrolling the wall", async ({ page }) => {

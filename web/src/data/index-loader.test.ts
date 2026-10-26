@@ -1,5 +1,6 @@
 import { RAW_FIXTURE } from "./fixture";
-import { loadIndex, parseIndex } from "./index-loader";
+import { INDEX_URL, loadIndex, parseIndex } from "./index-loader";
+import { DATA_REV } from "./rev";
 
 describe("parseIndex", () => {
   it("assigns atlas positions in array order", () => {
@@ -38,5 +39,11 @@ describe("loadIndex", () => {
   it("rejects on HTTP errors", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 500 })));
     await expect(loadIndex()).rejects.toThrow("index: HTTP 500");
+  });
+});
+
+describe("INDEX_URL", () => {
+  it("carries the data revision so a cached index always matches its atlas sheets", () => {
+    expect(INDEX_URL).toBe(`/data/index.json?r=${DATA_REV}`);
   });
 });
