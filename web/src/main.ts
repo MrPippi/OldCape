@@ -2,10 +2,12 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
 import "./styles/wall.css";
+import "./styles/detail.css";
 
 import { loadIndex } from "./data/index-loader";
 import { filterByColors } from "./data/query";
 import type { CapeEntry, CapeIndex } from "./data/types";
+import { mountDetail } from "./ui/detail";
 import { mountFinder } from "./ui/finder";
 import { mountHero } from "./ui/hero";
 import { showLoadError, showLoading } from "./ui/status";
@@ -21,10 +23,8 @@ function byId<T extends HTMLElement = HTMLElement>(id: string): T {
 }
 
 function mountPage(index: CapeIndex): void {
-  const open = (entry: CapeEntry): void => {
-    // Detail view arrives in Task 9.
-    void entry;
-  };
+  const detail = mountDetail(byId("detail-root"), index);
+  const open = (entry: CapeEntry): void => detail.open(entry);
   mountHero(byId("hero"), index, open);
   const wall = mountWall(byId("wall"), index, open);
   const showMatches = (mask: number): void => {
@@ -38,6 +38,8 @@ function mountPage(index: CapeIndex): void {
     onNotFound: () => undefined,
   });
   showMatches(0);
+  detail.syncFromLocation();
+  window.addEventListener("popstate", () => detail.syncFromLocation());
 }
 
 function wireReleaseLink(): void {
