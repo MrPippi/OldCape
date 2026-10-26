@@ -1,0 +1,8 @@
+{
+  // Static-only Worker: serves the Vite build output, no server code.
+  "name": "oldcpae",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
