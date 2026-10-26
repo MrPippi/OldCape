@@ -14,7 +14,7 @@ import { showLoadError, showLoading } from "./ui/status";
 import { mountWall } from "./ui/wall";
 
 /** GitHub Releases asset with every 64x32 texture; set when the release exists. */
-export const RELEASE_ZIP_URL = "";
+export const RELEASE_ZIP_URL = "https://github.com/MrPippi/OldCape/releases/download/v1.0.0/oldcape-capes.zip";
 
 function byId<T extends HTMLElement = HTMLElement>(id: string): T {
   const node = document.getElementById(id);
