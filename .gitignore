@@ -1,0 +1,13 @@
+.superpowers/
+node_modules/
+web/dist/
+web/coverage/
+web/test-results/
+web/playwright-report/
+release/
+__pycache__/
+.pytest_cache/
+.coverage
+.venv/
+*.egg-info/
+lh.json
