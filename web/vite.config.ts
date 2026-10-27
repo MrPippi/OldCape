@@ -18,7 +18,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    include: ["src/**/*.test.ts", "build/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "build/**/*.test.ts", "worker/*.test.ts"],
     coverage: {
       provider: "v8",
       include: ["src/data/**", "src/render/**"],
