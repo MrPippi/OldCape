@@ -4,15 +4,19 @@ import "./styles/layout.css";
 import "./styles/wall.css";
 import "./styles/detail.css";
 import "./styles/motion.css";
+import "./styles/guestbook.css";
 
+import { guestbookApi } from "./data/guestbook-api";
 import { loadIndex } from "./data/index-loader";
 import { filterByColors } from "./data/query";
 import type { CapeEntry, CapeIndex } from "./data/types";
 import { mountDetail } from "./ui/detail";
 import { mountFinder } from "./ui/finder";
+import { mountGuestbook } from "./ui/guestbook";
 import { mountHero } from "./ui/hero";
 import { mountInfoDialogs } from "./ui/info";
 import { showLoadError, showLoading } from "./ui/status";
+import { loadTurnstile, sitekeyFor } from "./ui/turnstile";
 import { mountWall } from "./ui/wall";
 
 /** GitHub Releases asset with every 64x32 texture; set when the release exists. */
@@ -24,9 +28,33 @@ function byId<T extends HTMLElement = HTMLElement>(id: string): T {
   return node as T;
 }
 
+function safeLocalStorage(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+/** The guestbook works before the cape index loads; cape links light up once it does. */
+let openCape: ((entry: CapeEntry) => void) | null = null;
+const guestbookDialog = byId<HTMLDialogElement>("guestbook");
+const guestbook = mountGuestbook(byId("gb"), {
+  api: guestbookApi(),
+  captcha: (container) => loadTurnstile(container, sitekeyFor(location.hostname)),
+  storage: safeLocalStorage(),
+  now: Date.now,
+  openCape: (entry) => {
+    guestbookDialog.close();
+    openCape?.(entry);
+  },
+});
+
 function mountPage(index: CapeIndex): void {
   const detail = mountDetail(byId("detail-root"), index);
   const open = (entry: CapeEntry): void => detail.open(entry);
+  openCape = open;
+  guestbook.setIndex(index);
   mountHero(byId("hero"), index, open);
   const wallRoot = byId("wall");
   const finderRoot = byId("finder");
@@ -72,5 +100,5 @@ async function boot(): Promise<void> {
 }
 
 wireReleaseLink();
-mountInfoDialogs(document);
+mountInfoDialogs(document).onOpen("guestbook", () => guestbook.load());
 void boot();

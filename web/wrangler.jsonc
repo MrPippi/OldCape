@@ -1,10 +1,23 @@
 {
-  // Static-only Worker: serves the Vite build output, no server code.
+  // Static site + guestbook API: /api/* runs worker/index.ts, everything else is served from dist.
   "name": "oldcape",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "oldcape-guestbook",
+      "database_id": "fc050af5-8ffe-4a1a-8714-b5498ea1c833",
+      "migrations_dir": "worker/migrations"
+    }
+  ],
+  // Secrets (set in Cloudflare, never in git): TURNSTILE_SECRET, IP_SALT
+  "observability": { "enabled": true },
   "routes": [
     { "pattern": "oldcape.org", "custom_domain": true },
     { "pattern": "www.oldcape.org", "custom_domain": true }

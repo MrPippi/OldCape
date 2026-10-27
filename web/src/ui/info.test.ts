@@ -87,6 +87,19 @@ describe("mountInfoDialogs", () => {
     expect(dialog().open).toBe(true);
   });
 
+  it("tells a listener each time its dialog opens, and right away if it is already open", () => {
+    setup();
+    const dialogs = mountInfoDialogs(document);
+    const seen = vi.fn();
+    dialogs.onOpen("how", seen);
+    expect(seen).not.toHaveBeenCalled();
+    document.getElementById("to-how")?.click();
+    expect(seen).toHaveBeenCalledTimes(1);
+    const late = vi.fn();
+    dialogs.onOpen("how", late);
+    expect(late).toHaveBeenCalledTimes(1);
+  });
+
   it("ignores a hash that is not a dialog", () => {
     history.replaceState(null, "", "/#finder");
     setup();

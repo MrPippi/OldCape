@@ -21,6 +21,23 @@
 .nav nav a {
   color: var(--mute);
   text-decoration: none;
+  white-space: nowrap;
+}
+.logo {
+  white-space: nowrap;
+}
+/* four menu items + logo must fit 375px on one line */
+@media (max-width: 479px) {
+  .nav {
+    gap: 12px;
+  }
+  .nav nav {
+    gap: 12px;
+    font-size: 13px;
+  }
+  .logo-en {
+    display: none;
+  }
 }
 .nav nav a:hover {
   color: var(--ink);

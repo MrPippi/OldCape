@@ -22,11 +22,12 @@
     </svg>
 
     <header class="nav">
-      <a class="logo pixel" href="/">老披風 OldCape</a>
+      <a class="logo pixel" href="/">老披風<span class="logo-en"> OldCape</span></a>
       <nav aria-label="主選單">
         <a href="#finder">圖鑑</a>
         <a href="#how">怎麼穿上</a>
         <a href="#about">關於</a>
+        <a href="#guestbook">留言板</a>
       </nav>
     </header>
 
@@ -77,6 +78,13 @@
       <p>「台灣麥塊」曾是台灣最大型的 Minecraft 伺服器，玩家可以上傳自己畫的披風。伺服器熄燈後，留下了這三萬件作品。這裡把它們一件件還原成遊戲貼圖，讓老玩家找回自己的那件，也讓大家再看一次當年的創作。</p>
       <p><a class="b2" id="release-zip" href="#"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>下載全套披風 .zip</a></p>
       <p class="note">本站用 Cloudflare Web Analytics 統計瀏覽人數，不使用 Cookie，也不追蹤個人。</p>
+    </dialog>
+
+    <dialog class="info guestbook" id="guestbook" aria-labelledby="guestbook-title">
+      <button type="button" class="x" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-xmark"/></svg></button>
+      <h2 id="guestbook-title">留言板</h2>
+      <p class="note">留下你和台灣麥塊的回憶。輸入 #編號（例如 #1234）會自動連到那件披風。</p>
+      <div id="gb"></div>
     </dialog>
 
     <div id="detail-root"></div>
