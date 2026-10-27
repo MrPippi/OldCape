@@ -1,4 +1,5 @@
 import { findById } from "../data/query";
+import { removalRequestUrl } from "../data/removal";
 import type { CapeEntry, CapeIndex } from "../data/types";
 import { downloadCape } from "../render/download";
 import { capeHref, pushCape, readCapeParam } from "../router";
@@ -69,6 +70,7 @@ export function mountDetail(
 
     const how = h("a", { class: "how-link", href: "#how" }, "怎麼穿上？");
     how.addEventListener("click", () => close());
+    const removal = h("a", { class: "removal-link", href: removalRequestUrl(entry.id), target: "_blank", rel: "noopener" }, "申請移除這件披風");
 
     const closeBtn = h("button", { type: "button", class: "x", "data-action": "close", "aria-label": "關閉" }, icon("xmark"));
     closeBtn.addEventListener("click", () => close());
@@ -89,7 +91,7 @@ export function mountDetail(
         h("p", { class: "meta" }, "台灣麥塊玩家作品 · 遊戲貼圖 64×32 PNG"),
         h("div", { class: "btns" }, dl, share),
         status,
-        how));
+        h("p", { class: "detail-links" }, how, removal)));
 
     root.replaceChildren(backdrop, panel);
     document.body.classList.add("detail-open");

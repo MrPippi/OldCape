@@ -32,6 +32,15 @@ describe("mountDetail", () => {
     expect(location.search).toBe("?cape=12");
   });
 
+  it("links to the removal request form for this cape, in a new tab", () => {
+    const { root, api } = setup(1280);
+    api.open(idx.byId.get(12)!);
+    const link = [...root.querySelectorAll<HTMLAnchorElement>("a")].find((a) => a.textContent === "申請移除這件披風")!;
+    expect(new URL(link.href).searchParams.get("cape")).toBe("12");
+    expect(link.target).toBe("_blank");
+    expect(link.rel).toBe("noopener");
+  });
+
   it("uses a 6x bottom sheet on mobile", () => {
     const { root, api } = setup(375);
     api.open(idx.byId.get(12)!);

@@ -114,9 +114,19 @@ body.detail-open {
   color: var(--gold);
   font-size: 13px;
 }
+.detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 4px 0 0;
+}
 .how-link {
   color: var(--soft);
   font-size: 13px;
+}
+.removal-link {
+  color: var(--mute);
+  font-size: 12px;
 }
 
 /* mobile: bottom sheet */

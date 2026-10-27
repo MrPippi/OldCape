@@ -1,0 +1,41 @@
+name: 申請移除披風
+description: 這件披風是你畫的（或是你當年的披風），希望從老披風移除
+title: "移除披風 #"
+labels: ["removal-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        老披風典藏的是當年台灣麥塊玩家上傳的披風。如果其中有你的作品，而你不希望它出現在這裡，請填寫這張表，我們會盡快移除。
+        移除後，這件披風（以及和它圖案完全相同的重複編號）會從網站與「全套披風 .zip」中刪除。
+        **請不要在這裡填寫 Email、電話等個人資料**，這個頁面是公開的。
+  - type: input
+    id: cape
+    attributes:
+      label: 披風編號
+      description: 披風頁面上的 #編號（只要數字）
+      placeholder: "1234"
+    validations:
+      required: true
+  - type: dropdown
+    id: relation
+    attributes:
+      label: 你和這件披風的關係
+      options:
+        - 我是原作者（這是我畫的）
+        - 我是當年使用這件披風的玩家
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: 補充說明（可留空）
+      description: 例如還有其他也是你畫的編號
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 確認
+      options:
+        - label: 我了解移除後無法復原，網站與全套下載都會刪除這件披風
+          required: true

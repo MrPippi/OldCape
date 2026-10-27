@@ -3,7 +3,9 @@ import zipfile
 
 from PIL import Image
 
-from oldcape.build import main, run_build
+import pytest
+
+from oldcape.build import main, read_removed, run_build
 from oldcape.texture import PREVIEW_SIZE, REGION_SIZE
 
 PREFIX = "台灣麥塊www.minecraft.com.tw"
@@ -62,3 +64,37 @@ def test_main_cli(tmp_path, capsys):
     printed = capsys.readouterr().out
     assert "canonical: 3" in printed
     assert "unsupported: 1" in printed
+
+
+def test_removed_artwork_leaves_index_atlas_and_zip(tmp_path):
+    src, out, zp = tmp_path / "src", tmp_path / "out", tmp_path / "capes.zip"
+    make_source(src)
+    # 10 is a duplicate of 4: asking to remove either removes that artwork entirely
+    report = run_build(src, out, zp, removed=frozenset({10}))
+    idx = json.loads((out / "index.json").read_text(encoding="utf-8"))
+    assert [c[0] for c in idx["capes"]] == [2, 7]
+    assert idx["aliases"] == []
+    assert report.removed == 2
+    assert "removed: 2" in report.lines()
+    with zipfile.ZipFile(zp) as z:
+        assert sorted(z.namelist()) == ["oldcape-2.png", "oldcape-7.png"]
+
+
+def test_read_removed_file(tmp_path):
+    f = tmp_path / "removed.txt"
+    f.write_text("# 下架申請，一行一個編號\n123  # issue #5\n\n456\n", encoding="utf-8")
+    assert read_removed(f) == frozenset({123, 456})
+    assert read_removed(tmp_path / "missing.txt") == frozenset()
+    f.write_text("123\nabc\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="line 2"):
+        read_removed(f)
+
+
+def test_cli_reads_the_removed_list(tmp_path):
+    src, out = tmp_path / "src", tmp_path / "out"
+    make_source(src)
+    removed = tmp_path / "removed.txt"
+    removed.write_text("2\n", encoding="utf-8")
+    assert main(["--src", str(src), "--out", str(out), "--removed", str(removed)]) == 0
+    idx = json.loads((out / "index.json").read_text(encoding="utf-8"))
+    assert 2 not in [c[0] for c in idx["capes"]]

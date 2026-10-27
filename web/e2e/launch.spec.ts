@@ -21,12 +21,12 @@ test("link previews: title, description and a 1200x630 image", async ({ page, re
 });
 
 test("says plainly that this is an unofficial fan site", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator(".hero .unofficial")).toHaveText("非官方網站 · 與 Mojang、Microsoft 無關");
+  // one real load (a second goto that only changes the hash would not reload the page)
   await page.goto("/#about");
-  await expect(page.getByRole("dialog", { name: "關於老披風" })).toContainText(
-    "NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.",
-  );
+  const about = page.getByRole("dialog", { name: "關於老披風" });
+  await expect(about).toContainText("NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.");
+  await about.getByRole("button", { name: "關閉" }).click();
+  await expect(page.locator(".hero .unofficial")).toHaveText("非官方網站 · 與 Mojang、Microsoft 無關");
 });
 
 test("robots.txt points at the sitemap and keeps the API and admin out", async ({ request }) => {

@@ -1,6 +1,9 @@
 """CLI: source folders -> atlases + index.json (+ optional zip of 64x32 textures).
 
-Usage: python -m oldcape.build --src DIR --out DIR [--zip PATH]
+Usage: python -m oldcape.build --src DIR --out DIR [--zip PATH] [--removed FILE]
+
+`--removed` (default: pipeline/removed.txt) lists cape ids whose authors asked for
+removal; that artwork, and every duplicate of it, is left out of everything.
 """
 
 from __future__ import annotations
@@ -23,6 +26,7 @@ from oldcape.scan import scan_source
 from oldcape.texture import REGION_SIZE, UnsupportedSizeError, load_region, to_texture
 
 CHUNK = 64
+DEFAULT_REMOVED = Path(__file__).resolve().parents[1] / "removed.txt"
 
 
 @dataclass(frozen=True)
@@ -35,6 +39,7 @@ class BuildReport:
     blank: int = 0
     sheets: int = 0
     files_written: int = 0
+    removed: int = 0
 
     def lines(self) -> list[str]:
         skipped = ", ".join(f"{k}={v}" for k, v in sorted(self.skipped.items())) or "none"
@@ -46,6 +51,7 @@ class BuildReport:
             f"canonical: {self.canonical}",
             f"aliases: {self.aliases}",
             f"blank: {self.blank}",
+            f"removed: {self.removed}",
             f"sheets: {self.sheets}",
             f"files written: {self.files_written}",
         ]
@@ -72,7 +78,24 @@ def _write_zip(regions: dict[int, Image.Image], zip_path: Path) -> None:
             zf.writestr(f"oldcape-{cape_id}.png", buf.getvalue())
 
 
-def run_build(src: Path, out: Path, zip_path: Path | None = None) -> BuildReport:
+def read_removed(path: Path) -> frozenset[int]:
+    """Cape ids from a removal list: one per line, `#` starts a comment. Missing file = none."""
+    if not path.exists():
+        return frozenset()
+    ids: set[int] = set()
+    for n, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        line = raw.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if not line.isdigit():
+            raise ValueError(f"{path}: line {n}: not a cape id: {raw!r}")
+        ids.add(int(line))
+    return frozenset(ids)
+
+
+def run_build(
+    src: Path, out: Path, zip_path: Path | None = None, removed: frozenset[int] = frozenset()
+) -> BuildReport:
     scan = scan_source(src)
     paths = [c.path for c in scan.capes]
     with ProcessPoolExecutor() as pool:
@@ -86,7 +109,10 @@ def run_build(src: Path, out: Path, zip_path: Path | None = None) -> BuildReport
         else:
             region_bytes[cape.id] = data
 
-    canonical_of = assign_canonical(region_bytes)
+    full = assign_canonical(region_bytes)
+    # removing any id removes its artwork: the canonical cape and all its duplicates
+    gone = {c for a, c in full.items() if a in removed or c in removed}
+    canonical_of = {a: c for a, c in full.items() if c not in gone}
     canonical_ids = sorted({c for c in canonical_of.values()})
     aliases = {a: c for a, c in canonical_of.items() if a != c}
     regions = {i: _region(region_bytes[i]) for i in canonical_ids}
@@ -109,6 +135,7 @@ def run_build(src: Path, out: Path, zip_path: Path | None = None) -> BuildReport
         blank=sum(1 for e in entries if e.blank),
         sheets=len(sheets),
         files_written=len(sheets) + 1,
+        removed=len(full) - len(canonical_of),
     )
 
 
@@ -117,10 +144,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--src", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--zip", type=Path, default=None)
+    parser.add_argument("--removed", type=Path, default=DEFAULT_REMOVED)
     args = parser.parse_args(argv)
     if not args.src.is_dir():
         parser.error(f"--src is not a directory: {args.src}")
-    report = run_build(args.src, args.out, args.zip)
+    report = run_build(args.src, args.out, args.zip, read_removed(args.removed))
     print("\n".join(report.lines()))
     return 0
 
