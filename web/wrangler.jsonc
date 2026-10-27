@@ -1,5 +1,5 @@
 {
-  // Static site + guestbook API: /api/* runs worker/index.ts, everything else is served from dist.
+  // Static site + chat: /api/* runs worker/index.ts, everything else is served from dist.
   "name": "oldcape",
   "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
@@ -16,7 +16,11 @@
       "migrations_dir": "worker/migrations"
     }
   ],
-  // Secrets (set in Cloudflare, never in git): TURNSTILE_SECRET, IP_SALT
+  "durable_objects": {
+    "bindings": [{ "name": "CHAT", "class_name": "ChatRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ChatRoom"] }],
+  // Secrets (set in Cloudflare, never in git): TURNSTILE_SECRET, IP_SALT, SESSION_KEY
   "observability": { "enabled": true },
   "routes": [
     { "pattern": "oldcape.org", "custom_domain": true },

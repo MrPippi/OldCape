@@ -12,11 +12,13 @@ export default defineWorkersConfig(async () => {
       poolOptions: {
         workers: {
           singleWorker: true,
+          isolatedStorage: false, // WebSocket Durable Objects outlive a test; tables are cleared in beforeEach
           main: path.join(__dirname, "index.ts"),
           miniflare: {
             compatibilityDate: "2026-10-01",
             d1Databases: ["DB"],
-            bindings: { TEST_MIGRATIONS: migrations, TURNSTILE_SECRET: "test-secret", IP_SALT: "test-salt" },
+            durableObjects: { CHAT: { className: "ChatRoom", useSQLite: true } },
+            bindings: { TEST_MIGRATIONS: migrations, TURNSTILE_SECRET: "test-secret", IP_SALT: "test-salt", SESSION_KEY: "test-session-key-0123456789abcdef" },
             serviceBindings: { ASSETS: () => new Response("static page") },
           },
         },
