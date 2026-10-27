@@ -2,6 +2,7 @@ import { findById, parseIdInput, randomPick } from "../data/query";
 import { COLOR_BUCKETS } from "../data/types";
 import type { CapeEntry, CapeIndex } from "../data/types";
 import { formatCount, h } from "./dom";
+import { icon } from "./icons";
 
 export interface FinderEvents {
   onFilter(mask: number): void;
@@ -47,7 +48,7 @@ export function mountFinder(root: HTMLElement, index: CapeIndex, events: FinderE
   });
 
   const randomButton = (): HTMLButtonElement => {
-    const button = h("button", { type: "button", class: "b2", "data-action": "random" }, "🎲 隨機看一件");
+    const button = h("button", { type: "button", class: "b2", "data-action": "random" }, icon("dice"), "隨機看一件");
     button.addEventListener("click", () => events.onOpen(randomPick(index)));
     return button;
   };

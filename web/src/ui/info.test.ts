@@ -79,6 +79,14 @@ describe("mountInfoDialogs", () => {
     expect(location.pathname + location.search + location.hash).toBe("/?cape=12");
   });
 
+  it("opens when the hash changes on an already loaded page", () => {
+    setup();
+    mountInfoDialogs(document);
+    history.replaceState(null, "", "/#how");
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    expect(dialog().open).toBe(true);
+  });
+
   it("ignores a hash that is not a dialog", () => {
     history.replaceState(null, "", "/#finder");
     setup();

@@ -73,6 +73,26 @@ button {
   border: 1px solid #3a3d42;
 }
 
+/* Icons: <svg class="ic"><use href="#i-…"></svg> into the sprite at the top of index.html */
+.icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.ic {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  flex: none;
+}
+.x .ic {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: auto;
+}
+
 .status {
   padding: 64px var(--gutter);
   text-align: center;

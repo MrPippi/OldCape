@@ -25,5 +25,11 @@ export function mountInfoDialogs(doc: Document): void {
     if (!dialog.open) dialog.showModal();
   });
 
-  byHash(location.hash)?.showModal();
+  const openFromHash = (): void => {
+    const dialog = byHash(location.hash);
+    if (dialog && !dialog.open) dialog.showModal();
+  };
+  // a link to /#how from elsewhere only changes the hash when the page is already open
+  doc.defaultView?.addEventListener("hashchange", openFromHash);
+  openFromHash();
 }

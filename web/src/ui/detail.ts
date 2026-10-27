@@ -3,6 +3,7 @@ import type { CapeEntry, CapeIndex } from "../data/types";
 import { downloadCape } from "../render/download";
 import { capeHref, pushCape, readCapeParam } from "../router";
 import { h } from "./dom";
+import { icon } from "./icons";
 import { detailScale, isDesktop } from "./scale";
 import { mountSlab } from "./slab";
 
@@ -46,7 +47,7 @@ export function mountDetail(
     const scale = detailScale(width);
     const status = h("p", { class: "detail-status", role: "status" });
 
-    const dl = h("button", { type: "button", class: "b1" }, "⬇ 下載遊戲貼圖");
+    const dl = h("button", { type: "button", class: "b1" }, icon("download"), "下載遊戲貼圖");
     dl.addEventListener("click", () => {
       status.textContent = "";
       deps.download(entry, index).catch((error: unknown) => {
@@ -55,13 +56,13 @@ export function mountDetail(
       });
     });
 
-    const share = h("button", { type: "button", class: "b2" }, "🔗 複製分享連結");
+    const share = h("button", { type: "button", class: "b2" }, icon("link"), "複製分享連結");
     share.addEventListener("click", () => {
       deps.clipboard
         .writeText(`${location.origin}${capeHref(entry.id)}`)
         .then(() => {
-          share.textContent = "✓ 已複製";
-          setTimeout(() => (share.textContent = "🔗 複製分享連結"), COPIED_RESET_MS);
+          share.replaceChildren(icon("check"), "已複製");
+          setTimeout(() => share.replaceChildren(icon("link"), "複製分享連結"), COPIED_RESET_MS);
         })
         .catch(() => (status.textContent = `複製失敗，連結是 ${location.origin}${capeHref(entry.id)}`));
     });
@@ -69,7 +70,7 @@ export function mountDetail(
     const how = h("a", { class: "how-link", href: "#how" }, "怎麼穿上？");
     how.addEventListener("click", () => close());
 
-    const closeBtn = h("button", { type: "button", class: "x", "data-action": "close", "aria-label": "關閉" }, "✕");
+    const closeBtn = h("button", { type: "button", class: "x", "data-action": "close", "aria-label": "關閉" }, icon("xmark"));
     closeBtn.addEventListener("click", () => close());
 
     const backdrop = h("div", { class: "backdrop" });

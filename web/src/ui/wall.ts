@@ -2,6 +2,7 @@ import { randomPick } from "../data/query";
 import type { CapeEntry, CapeIndex } from "../data/types";
 import { applySprite } from "../render/sprite";
 import { h } from "./dom";
+import { icon } from "./icons";
 import { wallScale } from "./scale";
 
 export const PAGE_SIZE = 64;
@@ -60,7 +61,7 @@ export function mountWall(root: HTMLElement, index: CapeIndex, onOpen: (e: CapeE
   };
 
   const emptyState = (): HTMLElement => {
-    const button = h("button", { type: "button", class: "b2" }, "🎲 隨機看一件");
+    const button = h("button", { type: "button", class: "b2" }, icon("dice"), "隨機看一件");
     button.addEventListener("click", () => onOpen(randomPick(index)));
     return h("div", { class: "empty" }, h("p", {}, "沒有符合的披風，試試少選一種顏色。"), button);
   };
