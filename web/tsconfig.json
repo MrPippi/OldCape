@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "types": ["vite/client", "vitest/globals", "node"]
   },
-  "include": ["src", "build", "vite.config.ts"]
+  "include": ["src", "build", "vite.config.ts", "worker/vitest.config.ts"]
 }
