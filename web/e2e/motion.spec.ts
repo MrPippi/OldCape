@@ -35,3 +35,32 @@ test.describe("reduced motion", () => {
     expect(await animationOf(".card .flip")(page)).toBe("none");
   });
 });
+
+test.describe("press feedback", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  test("buttons and cards sink slightly while pressed", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".card").nth(63)).toBeAttached();
+    for (const sel of [".hero .b1", "[data-action=random] >> nth=0", ".card >> nth=0"]) {
+      const el = page.locator(sel);
+      const box = (await el.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await expect.poll(() => el.evaluate((e) => getComputedStyle(e).scale), { message: sel }).toBe("0.97");
+      await page.mouse.up();
+      await page.keyboard.press("Escape");
+    }
+  });
+});
+
+test("the wall shows placeholder cards, not just text, while capes load", async ({ page }) => {
+  await page.route(/\/data\/index\.json(\?|$)/, async (route) => {
+    await new Promise((r) => setTimeout(r, 1500));
+    await route.continue();
+  });
+  await page.goto("/");
+  await expect(page.locator(".wall.skeleton .card.ph").first()).toBeVisible();
+  await expect(page.locator(".card").nth(63)).toBeAttached();
+  await expect(page.locator(".wall.skeleton")).toHaveCount(0);
+});

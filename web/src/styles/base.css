@@ -65,6 +65,39 @@ button {
   cursor: pointer;
 }
 
+/* press feedback: a slight sink, so a tap feels like it landed */
+.b1,
+.b2,
+.chat-fab {
+  transition: scale 80ms ease-out;
+}
+.b1:active:not(:disabled),
+.b2:active:not(:disabled),
+.card:active,
+.chat-fab:active {
+  scale: 0.97;
+}
+
+/* loading placeholders (wall skeleton, chat history) */
+.ph-cape,
+.ph-num,
+.ph-line {
+  display: block;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--well) 0%, #1d2127 50%, var(--well) 100%) 0 0 / 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ph-cape,
+  .ph-num,
+  .ph-line {
+    animation: none;
+  }
+}
+
 .b1 {
   background: var(--gold);
   color: #141414;

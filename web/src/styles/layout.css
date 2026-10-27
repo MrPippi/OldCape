@@ -122,7 +122,7 @@
   border: 0;
   padding: 0;
   cursor: pointer;
-  filter: drop-shadow(0 14px 18px #000);
+  filter: drop-shadow(0 14px 18px rgb(var(--shade)));
 }
 .ped {
   position: relative;
@@ -222,7 +222,7 @@ body:has(dialog.info[open]) {
   outline: none; /* the box itself gets focus on open; its buttons keep their rings */
 }
 .info::backdrop {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgb(var(--shade) / 0.6);
 }
 .info .x {
   position: absolute;

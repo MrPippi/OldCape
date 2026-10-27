@@ -123,7 +123,24 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, scale 80ms ease-out;
+}
+/* skeleton card: same box as a real card (cape + #id line), never clickable */
+.card.ph {
+  cursor: default;
+  animation: none;
+}
+.card.ph:active {
+  scale: none;
+}
+.ph-cape {
+  width: calc(10px * var(--scale));
+  height: calc(16px * var(--scale));
+}
+.ph-num {
+  width: 34px;
+  height: 11px;
+  margin-block: 3px 2px;
 }
 .card:hover {
   border-color: #3a3d42;

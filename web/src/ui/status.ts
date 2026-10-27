@@ -10,6 +10,15 @@ export function showLoadError(root: HTMLElement, retry: () => void): void {
   );
 }
 
+/** Fills the first screen; 36 divides into full rows of 9 (desktop) and 4 (phones). */
+export const SKELETON_CARDS = 36;
+
+/** Placeholder cards in the real wall grid, so the page keeps its shape while the index loads. */
 export function showLoading(root: HTMLElement): void {
-  root.replaceChildren(h("div", { class: "status", "aria-busy": "true" }, h("p", {}, "載入披風中…")));
+  root.replaceChildren(
+    h("p", { class: "visually-hidden", role: "status" }, "載入披風中…"),
+    h("div", { class: "wall skeleton", "aria-busy": "true" },
+      ...Array.from({ length: SKELETON_CARDS }, () =>
+        h("div", { class: "card ph", "aria-hidden": "true" }, h("span", { class: "ph-cape" }), h("span", { class: "ph-num" })))),
+  );
 }

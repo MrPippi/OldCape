@@ -23,6 +23,8 @@
   --soft: #a9a397;
   --gold: #f0c674;
   --well: #0b0c0e;
+  /* shadows and scrims: the page's own blue-black, never pure black (use as rgb(var(--shade) / a)) */
+  --shade: 5 6 9;
 
   /* Body text uses the device's own CJK font (Android ships Noto Sans CJK; iOS PingFang). */
   --font-sans: "Noto Sans TC", "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif;

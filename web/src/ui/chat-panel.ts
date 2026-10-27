@@ -169,8 +169,12 @@ export function mountChatPanel(root: HTMLElement, deps: ChatPanelDeps): ChatPane
   });
 
   // ---- history ----
+  const skeleton = (): HTMLElement =>
+    h("div", { class: "chat-skeleton", role: "status", "aria-label": "載入訊息中" },
+      ...[0, 1, 2, 3].map(() => h("div", { class: "ph-msg" }, h("span", { class: "ph-line short" }), h("span", { class: "ph-line" }))));
+
   const loadInitial = (): void => {
-    historyStatus.replaceChildren("載入中…");
+    historyStatus.replaceChildren(skeleton());
     deps.api
       .list({})
       .then((page) => {

@@ -306,6 +306,18 @@ describe("mountChatPanel", () => {
     expect(deps.openCape).toHaveBeenCalledWith(index.byId.get(12));
   });
 
+  it("shows placeholder lines while history loads", async () => {
+    let resolve!: (v: unknown) => void;
+    const list = vi.fn(() => new Promise((r) => (resolve = r)));
+    const { panel, root } = setup({}, { list: list as unknown as GuestbookApi["list"] });
+    panel.start();
+    expect(root.querySelectorAll(".chat-skeleton .ph-line").length).toBeGreaterThan(0);
+    expect(root.querySelector(".chat-skeleton")?.getAttribute("aria-label")).toBe("載入訊息中");
+    resolve({ messages: [msg(1)], more: false });
+    await flush();
+    expect(root.querySelector(".chat-skeleton")).toBeNull();
+  });
+
   it("offers a retry when history fails to load", async () => {
     const list = vi.fn().mockRejectedValueOnce(new Error("down")).mockResolvedValueOnce({ messages: [msg(1)], more: false });
     const { panel, root, ids } = setup({}, { list });
