@@ -24,7 +24,8 @@ describe("loadTurnstile", () => {
   it("injects the script once, renders the widget and tracks its token", async () => {
     const api = { render: vi.fn((_el: HTMLElement, _o: Options) => "w1"), reset: vi.fn() };
     const box = document.createElement("div");
-    const pending = loadTurnstile(box, "key");
+    const onToken = vi.fn();
+    const pending = loadTurnstile(box, "key", onToken);
     const again = loadTurnstile(document.createElement("div"), "key");
     const scripts = document.head.querySelectorAll<HTMLScriptElement>(`script[src="${TURNSTILE_SCRIPT}"]`);
     expect(scripts).toHaveLength(1);
@@ -37,6 +38,7 @@ describe("loadTurnstile", () => {
     expect(captcha.token()).toBeNull();
     options.callback("tok");
     expect(captcha.token()).toBe("tok");
+    expect(onToken).toHaveBeenCalledWith("tok");
     options["expired-callback"]();
     expect(captcha.token()).toBeNull();
     options.callback("tok2");

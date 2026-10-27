@@ -8,9 +8,15 @@ export interface GuestPage {
   messages: GuestMessage[];
   more: boolean;
 }
+/** `before`: older page, newest first. `after`: what came after an id, oldest first. */
+export interface ListCursor {
+  before?: number;
+  after?: number;
+}
 export interface GuestbookApi {
-  list(before: number | null): Promise<GuestPage>;
-  post(input: { nickname: string; body: string; token: string }): Promise<GuestMessage>;
+  list(cursor: ListCursor): Promise<GuestPage>;
+  /** Trade a Turnstile token for a chat pass (lets this visitor speak for 6 hours). */
+  session(token: string): Promise<{ session: string; expiresAt: number }>;
   report(id: number): Promise<void>;
 }
 
@@ -57,17 +63,18 @@ export function guestbookApi(fetcher: typeof fetch = (input, init) => fetch(inpu
     call(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 
   return {
-    async list(before) {
-      const data = (await call(before === null ? BASE : `${BASE}?before=${before}`)) as { messages?: unknown; more?: unknown };
+    async list(cursor) {
+      const query = cursor.before !== undefined ? `?before=${cursor.before}` : cursor.after !== undefined ? `?after=${cursor.after}` : "";
+      const data = (await call(`${BASE}${query}`)) as { messages?: unknown; more?: unknown };
       if (!Array.isArray(data?.messages) || !data.messages.every(isMessage) || typeof data.more !== "boolean") {
         throw new ApiError("server");
       }
       return { messages: data.messages, more: data.more };
     },
-    async post(input) {
-      const data = (await postJson(BASE, input)) as { message?: unknown };
-      if (!isMessage(data?.message)) throw new ApiError("server");
-      return data.message;
+    async session(token) {
+      const data = (await postJson("/api/chat/session", { token })) as { session?: unknown; expiresAt?: unknown };
+      if (typeof data?.session !== "string" || typeof data.expiresAt !== "number") throw new ApiError("server");
+      return { session: data.session, expiresAt: data.expiresAt };
     },
     async report(id) {
       await postJson(`${BASE}/${id}/report`, {});

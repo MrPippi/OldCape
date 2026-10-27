@@ -1,13 +1,18 @@
-# Guestbook Worker
+# Chat Worker
 
 `/api/*` on oldcape.org runs `index.ts`; every other path is the static site in `dist/`.
 
-- `GET  /api/guestbook?before=<id>`: 20 visible messages, newest first
-- `POST /api/guestbook`: `{ nickname, body, token }` (Turnstile token) → 201
-- `POST /api/guestbook/<id>/report`: `{}` → 204; 3 different visitors hide a message
+- `GET  /api/chat` (WebSocket): the one chat room, a hibernating Durable Object (`chat-room.ts`).
+  Anyone can read; `?session=<pass>` lets the socket speak. Events: `hello`, `online`, `message`, `hidden`, `error`.
+- `POST /api/chat/session`: `{ token }` (Turnstile) → `{ session, expiresAt }`, a 6-hour HMAC pass
+- `GET  /api/chat/online`: `{ online }`
+- `GET  /api/guestbook?before=<id>` / `?after=<id>`: history, 20 per page (the table is still called messages)
+- `POST /api/guestbook/<id>/report`: `{}` → 204; 3 different visitors hide a message (broadcast as `hidden`)
 
-Bindings: `DB` (D1 `oldcape-guestbook`), `ASSETS`. Secrets: `TURNSTILE_SECRET`, `IP_SALT`.
-Tests: `npm run test:worker` (workerd + local D1).
+Limits: 1 message / 3 s and 200 / day per source (salted IP hash; raw IPs are never stored).
+Bindings: `DB` (D1 `oldcape-guestbook`), `CHAT` (Durable Object `ChatRoom`), `ASSETS`.
+Secrets: `TURNSTILE_SECRET`, `IP_SALT`, `SESSION_KEY`.
+Tests: `npm run test:worker` (workerd + local D1 + real WebSockets).
 
 ## Moderation (no admin page yet)
 
@@ -18,7 +23,7 @@ Cloudflare dashboard → Storage & Databases → D1 → `oldcape-guestbook` → 
 SELECT id, nickname, body, datetime(created_at / 1000, 'unixepoch', '+8 hours') AS taipei, hidden, report_count
 FROM messages ORDER BY id DESC LIMIT 50;
 
--- hide one (reversible)
+-- hide one (reversible; open chats drop it on their next reload)
 UPDATE messages SET hidden = 1 WHERE id = 123;
 
 -- show a message that reports hid by mistake

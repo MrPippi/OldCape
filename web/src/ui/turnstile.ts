@@ -1,4 +1,8 @@
-import type { Captcha } from "./guestbook";
+/** A rendered Turnstile widget: the current token (single use) and a way to get a fresh one. */
+export interface Captcha {
+  token(): string | null;
+  reset(): void;
+}
 
 export const TURNSTILE_SCRIPT = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 /** Public site key of the oldcape.org widget (the secret lives only in the Worker). */
@@ -40,15 +44,22 @@ function turnstileApi(): Promise<TurnstileApi> {
   return promise;
 }
 
-/** Load Turnstile on demand and render one widget; the token updates through its callbacks. */
-export async function loadTurnstile(container: HTMLElement, sitekey: string): Promise<Captcha> {
+/** Load Turnstile on demand and render one widget; `onToken` fires each time a check passes. */
+export async function loadTurnstile(
+  container: HTMLElement,
+  sitekey: string,
+  onToken: (token: string) => void = () => undefined,
+): Promise<Captcha> {
   const api = await turnstileApi();
   let token: string | null = null;
   const id = api.render(container, {
     sitekey,
     theme: "dark",
     language: "zh-tw",
-    callback: (t: string) => (token = t),
+    callback: (t: string) => {
+      token = t;
+      onToken(t);
+    },
     "expired-callback": () => (token = null),
     "error-callback": () => (token = null),
   });

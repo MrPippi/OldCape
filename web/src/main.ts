@@ -4,19 +4,18 @@ import "./styles/layout.css";
 import "./styles/wall.css";
 import "./styles/detail.css";
 import "./styles/motion.css";
-import "./styles/guestbook.css";
+import "./styles/chat.css";
 
-import { guestbookApi } from "./data/guestbook-api";
 import { loadIndex } from "./data/index-loader";
 import { filterByColors } from "./data/query";
 import type { CapeEntry, CapeIndex } from "./data/types";
 import { mountDetail } from "./ui/detail";
 import { mountFinder } from "./ui/finder";
-import { mountGuestbook } from "./ui/guestbook";
+import { mountChatLauncher } from "./ui/chat-launcher";
 import { mountHero } from "./ui/hero";
 import { mountInfoDialogs } from "./ui/info";
+import { isDesktop } from "./ui/scale";
 import { showLoadError, showLoading } from "./ui/status";
-import { loadTurnstile, sitekeyFor } from "./ui/turnstile";
 import { mountWall } from "./ui/wall";
 
 /** GitHub Releases asset with every 64x32 texture; set when the release exists. */
@@ -36,17 +35,38 @@ function safeLocalStorage(): Storage | null {
   }
 }
 
-/** The guestbook works before the cape index loads; cape links light up once it does. */
+const chatSocketUrl = (session: string | null): string =>
+  `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/api/chat${session ? `?session=${encodeURIComponent(session)}` : ""}`;
+
+/** Chat works before the cape index loads; "#id" links light up once it does. */
 let openCape: ((entry: CapeEntry) => void) | null = null;
-const guestbookDialog = byId<HTMLDialogElement>("guestbook");
-const guestbook = mountGuestbook(byId("gb"), {
-  api: guestbookApi(),
-  captcha: (container) => loadTurnstile(container, sitekeyFor(location.hostname)),
-  storage: safeLocalStorage(),
-  now: Date.now,
-  openCape: (entry) => {
-    guestbookDialog.close();
-    openCape?.(entry);
+const chat = mountChatLauncher(document, {
+  // All chat code (panel, socket, Turnstile) is a separate chunk, fetched on first open.
+  createPanel: async (root, hooks) => {
+    const [{ mountChatPanel }, { connectChat }, { guestbookApi }, { loadTurnstile, sitekeyFor }] = await Promise.all([
+      import("./ui/chat-panel"),
+      import("./data/chat-socket"),
+      import("./data/guestbook-api"),
+      import("./ui/turnstile"),
+    ]);
+    return mountChatPanel(root, {
+      api: guestbookApi(),
+      connect: (handlers) => connectChat(handlers),
+      captcha: (box, onToken) => loadTurnstile(box, sitekeyFor(location.hostname), onToken),
+      storage: safeLocalStorage(),
+      now: Date.now,
+      wsUrl: chatSocketUrl,
+      openCape: (entry) => {
+        if (!isDesktop(window.innerWidth)) chat.close(); // full-screen on phones: step aside for the cape
+        openCape?.(entry);
+      },
+      ...hooks,
+    });
+  },
+  fetchOnline: async () => {
+    const res = await fetch("/api/chat/online");
+    const data = (await res.json()) as { online?: unknown };
+    return typeof data.online === "number" ? data.online : 0;
   },
 });
 
@@ -54,7 +74,7 @@ function mountPage(index: CapeIndex): void {
   const detail = mountDetail(byId("detail-root"), index);
   const open = (entry: CapeEntry): void => detail.open(entry);
   openCape = open;
-  guestbook.setIndex(index);
+  chat.setIndex(index);
   mountHero(byId("hero"), index, open);
   const wallRoot = byId("wall");
   const finderRoot = byId("finder");
@@ -100,5 +120,5 @@ async function boot(): Promise<void> {
 }
 
 wireReleaseLink();
-mountInfoDialogs(document).onOpen("guestbook", () => guestbook.load());
+mountInfoDialogs(document);
 void boot();
