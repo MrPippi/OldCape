@@ -57,6 +57,7 @@ test("read, post, and see the new message on top; the nickname is remembered", a
   const dialog = page.getByRole("dialog", { name: "留言板" });
   await expect(dialog.locator(".gb-item").first()).toContainText("#12 是我當年的披風");
   await expect(dialog.locator(".ts-stub")).toBeVisible();
+  await expect(dialog.locator(".gb-more")).toBeHidden(); // the fake has no second page
   await dialog.getByLabel("暱稱").fill("老玩家");
   await dialog.getByLabel("留言", { exact: true }).fill("我也有一件 #15");
   await dialog.getByRole("button", { name: "送出" }).click();

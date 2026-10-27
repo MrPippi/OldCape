@@ -46,6 +46,11 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+/* `hidden` must win over component display rules such as .b2 { display: inline-flex } */
+[hidden] {
+  display: none !important;
+}
+
 .b1,
 .b2 {
   display: inline-flex;
