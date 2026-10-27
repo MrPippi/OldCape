@@ -18,7 +18,7 @@ export default defineWorkersConfig(async () => {
             compatibilityDate: "2026-10-01",
             d1Databases: ["DB"],
             durableObjects: { CHAT: { className: "ChatRoom", useSQLite: true } },
-            bindings: { TEST_MIGRATIONS: migrations, TURNSTILE_SECRET: "test-secret", IP_SALT: "test-salt", SESSION_KEY: "test-session-key-0123456789abcdef" },
+            bindings: { TEST_MIGRATIONS: migrations, TURNSTILE_SECRET: "test-secret", IP_SALT: "test-salt", SESSION_KEY: "test-session-key-0123456789abcdef", ADMIN_TOKEN: "test-admin-token-0123456789abcdef-0123456789" },
             serviceBindings: { ASSETS: () => new Response("static page") },
           },
         },

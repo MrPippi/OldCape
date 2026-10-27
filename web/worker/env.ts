@@ -7,4 +7,6 @@ export interface Env {
   TURNSTILE_SECRET: string;
   IP_SALT: string;
   SESSION_KEY: string;
+  /** Moderation; unset or shorter than 32 characters keeps the admin API off. */
+  ADMIN_TOKEN?: string;
 }

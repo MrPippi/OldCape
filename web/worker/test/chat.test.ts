@@ -150,4 +150,17 @@ describe("chat socket", () => {
     }
     expect(await watcher.nextOf("hidden")).toEqual({ type: "hidden", id: row!.id });
   });
+
+  it("removes a message from every screen when a moderator hides or deletes it", async () => {
+    const watcher = await connect();
+    await watcher.nextOf("hello");
+    const insert = env.DB.prepare("INSERT INTO messages (nickname, body, created_at, ip_hash) VALUES ('a', 'b', 1, 'x') RETURNING id");
+    const one = (await insert.first<{ id: number }>())!.id;
+    const two = (await insert.first<{ id: number }>())!.id;
+    const auth = { authorization: `Bearer ${env.ADMIN_TOKEN}` };
+    await SELF.fetch(`${BASE}/api/admin/messages/${one}/hide`, { method: "POST", headers: auth });
+    expect(await watcher.nextOf("hidden")).toEqual({ type: "hidden", id: one });
+    await SELF.fetch(`${BASE}/api/admin/messages/${two}`, { method: "DELETE", headers: auth });
+    expect(await watcher.nextOf("hidden")).toEqual({ type: "hidden", id: two });
+  });
 });

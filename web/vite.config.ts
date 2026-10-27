@@ -12,7 +12,11 @@ const versionIndexPreload = (): Plugin => ({
 });
 
 export default defineConfig({
-  build: { target: "es2022" },
+  build: {
+    target: "es2022",
+    // the moderation page is a second, unlinked entry (served at /admin)
+    rollupOptions: { input: { main: "index.html", admin: "admin.html" } },
+  },
   define: { __DATA_REV__: JSON.stringify(DATA_REV) },
   plugins: [versionIndexPreload()],
   test: {

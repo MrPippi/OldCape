@@ -1,38 +1,10 @@
+import { handleAdmin } from "./admin";
 import type { Env } from "./env";
+import { fail, json, readJson, sourceHash } from "./http";
+import { roomFetch } from "./room";
 import { issueSession, readSession } from "./session";
 import { listMessages, reportMessage } from "./store";
 import { verifyTurnstile } from "./turnstile";
-
-const MAX_REQUEST_BYTES = 4096;
-
-const json = (status: number, data: unknown, headers: Record<string, string> = {}): Response =>
-  new Response(data === null ? null : JSON.stringify(data), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers },
-  });
-const fail = (status: number, error: string, extra: Record<string, unknown> = {}, headers: Record<string, string> = {}) =>
-  json(status, { error, ...extra }, headers);
-
-async function sourceHash(ip: string, salt: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${salt}|${ip}`));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
-}
-
-/** JSON-only bodies: a cross-site HTML form can't send application/json without a CORS preflight. */
-async function readJson(req: Request): Promise<{ data: Record<string, unknown> } | { res: Response }> {
-  if (!(req.headers.get("content-type") ?? "").toLowerCase().startsWith("application/json")) {
-    return { res: fail(415, "bad_request") };
-  }
-  const text = await req.text();
-  if (new TextEncoder().encode(text).length > MAX_REQUEST_BYTES) return { res: fail(413, "bad_request") };
-  try {
-    const data: unknown = text ? JSON.parse(text) : {};
-    if (typeof data !== "object" || data === null || Array.isArray(data)) return { res: fail(400, "bad_request") };
-    return { data: data as Record<string, unknown> };
-  } catch {
-    return { res: fail(400, "bad_request") };
-  }
-}
 
 const CURSOR = /^\d{1,12}$/;
 
@@ -43,20 +15,6 @@ async function list(url: URL, env: Env): Promise<Response> {
     return fail(400, "bad_request");
   }
   return json(200, await listMessages(env.DB, { before: before === null ? null : Number(before), after: after === null ? null : Number(after) }));
-}
-
-/**
- * Call the one chat room. A deploy resets Durable Objects and in-flight calls fail with
- * "please retry"; every call here is safe to repeat, so retry once on a fresh stub.
- */
-async function roomFetch(env: Env, path: string, init?: RequestInit): Promise<Response> {
-  const call = () => env.CHAT.get(env.CHAT.idFromName("lobby")).fetch(`https://chat${path}`, init);
-  try {
-    return await call();
-  } catch (error) {
-    console.warn("chat: room call failed, retrying once", path, error);
-    return call();
-  }
 }
 
 /** Turnstile once, then a signed 6-hour pass that lets this visitor speak in the chat. */
@@ -113,6 +71,7 @@ export async function handleApi(req: Request, env: Env, now: number = Date.now()
       if (req.method !== "POST") return fail(405, "bad_request", {}, { allow: "POST" });
       return await report(req, env, Number(reportPath[1]), ip, now);
     }
+    if (url.pathname.startsWith("/api/admin/")) return await handleAdmin(req, url, env);
     return fail(404, "not_found");
   } catch (error) {
     console.error("guestbook: request failed", req.method, url.pathname, error);

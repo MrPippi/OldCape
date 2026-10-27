@@ -9,12 +9,18 @@
 - `GET  /api/guestbook?before=<id>` / `?after=<id>`: history, 20 per page (the table is still called messages)
 - `POST /api/guestbook/<id>/report`: `{}` → 204; 3 different visitors hide a message (broadcast as `hidden`)
 
+- `/api/admin/messages[?before=]` (GET), `/api/admin/messages/<id>/hide|show` (POST), `/api/admin/messages/<id>` (DELETE):
+  moderation, `Authorization: Bearer <ADMIN_TOKEN>`. Off (503) until `ADMIN_TOKEN` is set to 32+ characters.
+  Hiding or deleting removes the message from every open chat at once. The page is `/admin` (not linked anywhere).
+
 Limits: 1 message / 3 s and 200 / day per source (salted IP hash; raw IPs are never stored).
 Bindings: `DB` (D1 `oldcape-guestbook`), `CHAT` (Durable Object `ChatRoom`), `ASSETS`.
-Secrets: `TURNSTILE_SECRET`, `IP_SALT`, `SESSION_KEY`.
+Secrets: `TURNSTILE_SECRET`, `IP_SALT`, `SESSION_KEY`, `ADMIN_TOKEN` (set by the site owner; never shared).
 Tests: `npm run test:worker` (workerd + local D1 + real WebSockets).
 
-## Moderation (no admin page yet)
+## Moderation
+
+Use https://oldcape.org/admin. The SQL below is the fallback.
 
 Cloudflare dashboard → Storage & Databases → D1 → `oldcape-guestbook` → Console:
 

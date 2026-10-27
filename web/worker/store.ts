@@ -86,3 +86,44 @@ export async function reportMessage(db: D1Database, id: number, ipHash: string, 
     .first<{ report_count: number }>();
   return row?.report_count === REPORTS_TO_HIDE ? "hidden" : "ok";
 }
+
+export interface AdminMessage extends Message {
+  hidden: boolean;
+  reportCount: number;
+}
+
+/** Every message, hidden ones included, newest first: the moderation view. */
+export async function listAllMessages(db: D1Database, before: number | null): Promise<{ messages: AdminMessage[]; more: boolean }> {
+  const { results } = await db
+    .prepare(
+      `SELECT id, nickname, body, created_at, hidden, report_count FROM messages
+       WHERE (?1 IS NULL OR id < ?1) ORDER BY id DESC LIMIT ?2`,
+    )
+    .bind(before, PAGE_SIZE + 1)
+    .all<Row & { hidden: number; report_count: number }>();
+  return {
+    messages: results.slice(0, PAGE_SIZE).map((r) => ({ ...toMessage(r), hidden: r.hidden === 1, reportCount: r.report_count })),
+    more: results.length > PAGE_SIZE,
+  };
+}
+
+/** Hide or show a message. Showing also clears its reports, so it is not re-hidden by old ones. */
+export async function setHidden(db: D1Database, id: number, hidden: boolean): Promise<boolean> {
+  if (hidden) {
+    const res = await db.prepare("UPDATE messages SET hidden = 1 WHERE id = ?1").bind(id).run();
+    return res.meta.changes > 0;
+  }
+  const [, res] = await db.batch([
+    db.prepare("DELETE FROM reports WHERE message_id = ?1").bind(id),
+    db.prepare("UPDATE messages SET hidden = 0, report_count = 0 WHERE id = ?1").bind(id),
+  ]);
+  return res.meta.changes > 0;
+}
+
+export async function deleteMessage(db: D1Database, id: number): Promise<boolean> {
+  const [, res] = await db.batch([
+    db.prepare("DELETE FROM reports WHERE message_id = ?1").bind(id),
+    db.prepare("DELETE FROM messages WHERE id = ?1").bind(id),
+  ]);
+  return res.meta.changes > 0;
+}
