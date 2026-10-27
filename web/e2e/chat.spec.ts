@@ -97,7 +97,8 @@ test("a #id opens that cape", async ({ page }) => {
   await fakeChat(page);
   await page.goto("/#chat");
   const link = panel(page).locator("a.cape-ref").first();
-  await expect(link).toHaveText("#12");
+  // links appear once the 430 KB cape index arrives; allow for a slow network
+  await expect(link).toHaveText("#12", { timeout: 15_000 });
   const mini = await link.locator(".cape").evaluate((e) => [e.getBoundingClientRect().width, e.getBoundingClientRect().height]);
   expect(mini).toEqual([10, 16]);
   await link.click();
