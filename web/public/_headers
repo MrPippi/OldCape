@@ -18,3 +18,7 @@
 # Font subsets: renamed if they ever change.
 /fonts/*
   Cache-Control: public, max-age=2592000
+
+# Link-preview image: social sites cache it themselves; a day here is plenty.
+/og.png
+  Cache-Control: public, max-age=86400

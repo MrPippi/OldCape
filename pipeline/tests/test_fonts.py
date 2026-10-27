@@ -42,5 +42,5 @@ def test_subset_variable_font_pinned_to_black(tmp_path):
 
 
 def test_title_text_covers_headings():
-    for ch in "那些年，我們披在背上的回憶怎麼穿上？關於老披風":
+    for ch in "那些年，我們披在背上的回憶怎麼穿上？關於老披風聊天室":
         assert ch in TITLE_TEXT

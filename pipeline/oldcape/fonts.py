@@ -20,7 +20,7 @@ OUT_DIR = ROOT / "web" / "public" / "fonts"
 # Logo, cape numbers and homepage stats (Cubic 11 pixel font).
 ACCENT_TEXT = "老披風OldCape#0123456789,×件今日展出"
 # Hero title and section headings (Noto Serif TC Black). Keep in sync with index.html.
-TITLE_TEXT = "那些年，我們披在背上的回憶怎麼穿上？關於老披風"
+TITLE_TEXT = "那些年，我們披在背上的回憶怎麼穿上？關於老披風聊天室"
 
 TARGETS = (
     (VENDOR / "Cubic_11.ttf", OUT_DIR / "cubic11-subset.woff2", ACCENT_TEXT, None),
