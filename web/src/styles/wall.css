@@ -113,7 +113,8 @@
   gap: 8px;
   --scale: 4;
 }
-.card {
+.card,
+.card-ph {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -125,13 +126,10 @@
   cursor: pointer;
   transition: border-color 0.15s, scale 80ms ease-out;
 }
-/* skeleton card: same box as a real card (cape + #id line), never clickable */
-.card.ph {
+/* skeleton card: the same box as a real card (cape + #id line), but its own class so
+   nothing that looks for .card (code, tests, hover/press styles) can pick a placeholder */
+.card-ph {
   cursor: default;
-  animation: none;
-}
-.card.ph:active {
-  scale: none;
 }
 .ph-cape {
   width: calc(10px * var(--scale));

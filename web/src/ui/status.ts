@@ -19,6 +19,6 @@ export function showLoading(root: HTMLElement): void {
     h("p", { class: "visually-hidden", role: "status" }, "載入披風中…"),
     h("div", { class: "wall skeleton", "aria-busy": "true" },
       ...Array.from({ length: SKELETON_CARDS }, () =>
-        h("div", { class: "card ph", "aria-hidden": "true" }, h("span", { class: "ph-cape" }), h("span", { class: "ph-num" })))),
+        h("div", { class: "card-ph", "aria-hidden": "true" }, h("span", { class: "ph-cape" }), h("span", { class: "ph-num" })))),
   );
 }
