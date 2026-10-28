@@ -81,8 +81,10 @@
 }
 
 /* ---------- wall: cards fade in page by page, and flip to show the back ---------- */
+/* `backwards`, never `both`: a finished entrance must let go of the card. Filling forwards keeps
+   every card on its own compositor layer, and a long wall then scrolls at half speed. */
 .card {
-  animation: card-in 0.45s ease-out both;
+  animation: card-in 0.45s ease-out backwards;
   animation-delay: calc(var(--i, 0) * 25ms);
 }
 .card .flip {
@@ -90,7 +92,7 @@
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
   /* `translate` rises in on its own property so it never fights the flip's `transform` */
-  animation: card-rise 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  animation: card-rise 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.15) backwards;
   animation-delay: calc(var(--i, 0) * 25ms);
 }
 .card .flip > .cape {

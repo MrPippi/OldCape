@@ -82,3 +82,34 @@ for (const vp of VIEWPORTS) {
     });
   });
 }
+
+for (const vp of VIEWPORTS) {
+  test.describe(`${vp.width}px long wall`, () => {
+    test.use({ viewport: { width: vp.width, height: vp.height } });
+
+    test("finished card animations let go, so a long wall does not pile up layers", async ({ page }) => {
+      await page.goto("/");
+      await expect(page.locator(".card").nth(63)).toBeAttached();
+      await page.waitForTimeout(2000); // longest entrance: 24 steps x 25 ms + 550 ms
+      const lingering = await page.evaluate(
+        () => document.getAnimations().filter((a) => (a.effect as KeyframeEffect | null)?.target?.closest(".card")).length,
+      );
+      expect(lingering).toBe(0);
+    });
+
+    test("off-screen cards reserve exactly their real height, so scrolling never jumps", async ({ page }) => {
+      await page.setViewportSize({ width: vp.width, height: 300 }); // keep card 63 far below the fold
+      await page.goto("/");
+      const last = page.locator(".card").nth(63);
+      await expect(last).toBeAttached();
+      expect(await last.evaluate((e) => getComputedStyle(e).contentVisibility)).toBe("auto");
+      // only meaningful while the browser is really skipping it
+      expect(await last.evaluate((e) => e.querySelector(".num")!.checkVisibility({ contentVisibilityAuto: true }))).toBe(false);
+      const reserved = await last.evaluate((e) => e.getBoundingClientRect().height);
+      await last.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+      const real = await last.evaluate((e) => e.getBoundingClientRect().height);
+      expect(Math.abs(reserved - real)).toBeLessThan(0.5);
+    });
+  });
+}

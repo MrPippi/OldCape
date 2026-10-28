@@ -112,6 +112,7 @@
   grid-template-columns: repeat(auto-fill, minmax(calc(10px * var(--scale) + 26px), 1fr));
   gap: 8px;
   --scale: 4;
+  --num-line: 17.6px; /* .num: 11px x line-height 1.6 */
 }
 .card,
 .card-ph {
@@ -125,6 +126,14 @@
   border-radius: var(--radius);
   cursor: pointer;
   transition: border-color 0.15s, scale 80ms ease-out;
+}
+/* Off-screen cards skip layout and paint, so a wall of thousands stays light. The reserved
+   size is the card's content box (cape + gap 6 + #id line); padding and border are added on
+   top by the browser, so the scrollbar never jumps when a card comes into view. */
+.card {
+  content-visibility: auto;
+  /* fixed, not `auto`: a remembered size can come from a first layout before the fonts landed */
+  contain-intrinsic-size: 60px calc(16px * var(--scale) + 6px + var(--num-line));
 }
 /* skeleton card: the same box as a real card (cape + #id line), but its own class so
    nothing that looks for .card (code, tests, hover/press styles) can pick a placeholder */
@@ -148,6 +157,7 @@
 }
 .num {
   font-size: 11px;
+  line-height: 1.6;
   color: var(--mute);
 }
 .sentinel {
@@ -169,6 +179,7 @@
   .wall {
     --scale: 6;
     gap: 12px;
+    --num-line: 19.2px; /* 12px x 1.6 */
   }
   .num {
     font-size: 12px;
